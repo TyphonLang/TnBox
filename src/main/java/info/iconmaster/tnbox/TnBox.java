@@ -32,10 +32,11 @@ public class TnBox {
 	}
 	
 	public static final CommandLineHelper.Option OPTION_RUN = new CommandLineHelper.Option(new String[] {"tnbox-run"}, new String[] {"r"}, false, "Runs the generated code in TnBox if specified.");
+	public static final CommandLineHelper.Option OPTION_MAIN = new CommandLineHelper.Option(new String[] {"tnbox-main"}, new String[] {}, false, "Specifies the main function.");
 	
 	@TyphonPlugin.AddCommandLineOptions
 	public static Object addOpts() {
-		return OPTION_RUN;
+		return new CommandLineHelper.Option[] {OPTION_RUN, OPTION_MAIN};
 	}
 	
 	private static List<Function> getMains(Package p) {
@@ -57,20 +58,34 @@ public class TnBox {
 	@TyphonPlugin.OnCompilationComplete
 	public static void onDone(CommandLineHelper claHelper, CommandLineHelper.Result result, TyphonInput tni) {
 		if (result.optionalArguments.containsKey(OPTION_RUN)) {
-			// find methods annotated with @main
-			List<Function> mains = new ArrayList<>();
-			for (Package p : tni.inputPackages) {
-				mains.addAll(getMains(p));
-			}
+			// find the main method
+			Function main = null;
 			
-			// error if none or more than 1 main
-			if (mains.size() != 1) {
-				System.err.println("error: no main function found. Please annotate a function with @main.");
-				return;
+			if (result.optionalArguments.containsKey(OPTION_MAIN)) {
+				// TODO: it was explicitly specified
+			} else {
+				// find methods annotated with @main
+				List<Function> mains = new ArrayList<>();
+				
+				for (Package p : tni.inputPackages) {
+					mains.addAll(getMains(p));
+				}
+				
+				// error if none or more than 1 main
+				if (mains.isEmpty()) {
+					System.err.println("error: no main function found. Please annotate a function with @main or specify a main function with --tnbox-main.");
+					return;
+				}
+				
+				if (mains.size() > 1) {
+					System.err.println("error: multiple main functions found. Please specify a main function with --tnbox-main.");
+					return;
+				}
+				
+				main = mains.get(0);
 			}
 			
 			// execute main
-			Function main = mains.get(0);
 			new TnBoxThread(main, new HashMap<>()).run();
 		}
 	}
