@@ -1,0 +1,97 @@
+apply plugin: 'java'
+apply plugin: 'edu.sc.seis.launch4j'
+apply plugin: 'jacoco'
+apply plugin: 'maven'
+apply plugin: 'antlr'
+
+// variables
+
+group = 'info.iconmaster'
+version = '0.1.0'
+
+def mainClass = 'info.iconmaster.tnbox.TnBox'
+def processedSrcDir = "${buildDir}/generated-src/java/main"
+
+def typhonVersion = '0.3.1'
+
+// define sources
+
+repositories {
+	jcenter()
+	mavenCentral()
+	
+    maven {
+		url 'http://dl.bintray.com/iconmaster5326/maven'
+	}
+}
+
+dependencies {
+	compile 'info.iconmaster:typhon:'+typhonVersion
+	testCompile "junit:junit:4.12"
+	antlr "org.antlr:antlr4:4.5"
+}
+
+buildscript {
+	repositories {
+		maven {
+			url 'https://plugins.gradle.org/m2/'
+		}
+	}
+	dependencies {
+		classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.6.1'
+		classpath 'org.apache.maven.wagon:wagon-http:2.2'
+	}
+}
+
+// define Launch4J settings
+
+launch4j {
+	mainClassName = mainClass
+	headerType = "console"
+}
+
+// add code coverage support
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
+    }
+}
+
+// add Bintray support
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "https://api.bintray.com/maven/iconmaster5326/maven/tnbox/;publish=1") {
+            authentication(userName: project.hasProperty('bintrayUser') ? project.property('bintrayUser') : '', password: project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : '')
+        }
+    }
+}
+
+// define artifacts - the .class and .java JARS
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+    
+    // uncomment the next line if you want a standalone jar
+    // from configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+    
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+	archives jar
+    archives sourcesJar
+}
