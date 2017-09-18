@@ -12,6 +12,7 @@ import info.iconmaster.tnbox.libs.TnBoxFunction;
 import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
 import info.iconmaster.typhon.compiler.Variable;
+import info.iconmaster.typhon.compiler.Instruction.OpCode;
 import info.iconmaster.typhon.model.CorePackage;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.types.TypeRef;
@@ -148,6 +149,81 @@ public class TnBoxCall {
 				// TODO: handle ret vals
 			}
 			break;
+		}
+		case INSTANCEOF: {
+			Variable dest = (Variable) inst.args[0];
+			Variable src = (Variable) inst.args[1];
+			TypeRef expectedType = (TypeRef) inst.args[2];
+			
+			TnBoxObject result = new TnBoxObject(new TypeRef(core.TYPE_BOOL), scope.getVar(src).get().type.canCastTo(expectedType));
+			scope.setVar(dest, result);
+			break;
+		}
+		case ISNULL: {
+			Variable dest = (Variable) inst.args[0];
+			Variable src = (Variable) inst.args[1];
+			
+			TnBoxVar var = scope.getVar(src);
+			
+			TnBoxObject result = new TnBoxObject(new TypeRef(core.TYPE_BOOL), var == null || var.get() == null);
+			scope.setVar(dest, result);
+			break;
+		}
+		case JUMP: {
+			boolean found = false;
+			int i = 0;
+			for (Instruction inst2 : code.ops) {
+				if (inst2.op == OpCode.LABEL && inst.args[0] == inst2.args[0]) {
+					found = true;
+					pc = i-1;
+					break;
+				}
+				i++;
+			}
+			
+			if (!found) {
+				throw new IllegalArgumentException("label not found");
+			}
+			
+			break;
+		}
+		
+		case JUMPIF: {
+			Variable src = (Variable) inst.args[0];
+			
+			if ((Boolean) scope.getVar(src).get().value) {
+				boolean found = false;
+				int i = 0;
+				for (Instruction inst2 : code.ops) {
+					if (inst2.op == OpCode.LABEL && inst.args[1] == inst2.args[0]) {
+						found = true;
+						pc = i-1;
+						break;
+					}
+					i++;
+				}
+				
+				if (!found) {
+					throw new IllegalArgumentException("label not found");
+				}
+			}
+			
+			break;
+		}
+		
+		case LABEL: {
+			// do nothing
+		}
+		
+		case NOT: {
+			Variable dest = (Variable) inst.args[0];
+			Variable src = (Variable) inst.args[1];
+			
+			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), !((Boolean) (scope.getVar(src).get().value))));
+		}
+		
+		default: {
+			throw new IllegalArgumentException("Unknown opcode "+inst.op);
 		}
 		}
 		
