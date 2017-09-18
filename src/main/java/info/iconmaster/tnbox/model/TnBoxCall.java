@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import info.iconmaster.tnbox.libs.CoreFunctions;
+import info.iconmaster.tnbox.libs.TnBoxFunction;
 import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
 import info.iconmaster.typhon.compiler.Variable;
@@ -74,7 +77,23 @@ public class TnBoxCall {
 			List<Variable> src = (List<Variable>) inst.args[2];
 			
 			if (f.isLibrary()) {
-				// TODO: handle system calls
+				TnBoxFunction handler = TnBoxFunction.registry.get(code.tni).get(f);
+				if (handler == null) {
+					throw new IllegalArgumentException("No handler for function "+f);
+				}
+				
+				List<TnBoxObject> retVals = handler.execute(code.tni, null, src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				
+				int i = 0;
+				for (Variable v : dest) {
+					if (i < retVals.size()) {
+						scope.setVar(v, retVals.get(i));
+					} else {
+						break;
+					}
+					
+					i++;
+				}
 			} else {
 				Map<Variable, TnBoxObject> args = new HashMap<>();
 				
@@ -98,7 +117,23 @@ public class TnBoxCall {
 			Function f = (Function) inst.args[2];
 			
 			if (f.isLibrary()) {
-				// TODO: handle system calls
+				TnBoxFunction handler = TnBoxFunction.registry.get(code.tni).get(f);
+				if (handler == null) {
+					throw new IllegalArgumentException("No handler for function "+f);
+				}
+				
+				List<TnBoxObject> retVals = handler.execute(code.tni, scope.getVar(thisVar).get(), src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				
+				int i = 0;
+				for (Variable v : dest) {
+					if (i < retVals.size()) {
+						scope.setVar(v, retVals.get(i));
+					} else {
+						break;
+					}
+					
+					i++;
+				}
 			} else {
 				Map<Variable, TnBoxObject> args = new HashMap<>();
 				
