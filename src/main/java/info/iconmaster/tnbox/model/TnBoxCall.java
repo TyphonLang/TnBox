@@ -73,18 +73,21 @@ public class TnBoxCall {
 			Function f = (Function) inst.args[1];
 			List<Variable> src = (List<Variable>) inst.args[2];
 			
-			Map<Variable, TnBoxObject> args = new HashMap<>();
-			
-			for (Variable v : src) {
-				args.put(v, scope.getVar(v).get());
-			}
-			
 			if (f.isLibrary()) {
 				// TODO: handle system calls
 			} else {
+				Map<Variable, TnBoxObject> args = new HashMap<>();
+				
+				int i = 0;
+				for (Variable v : src) {
+					args.put(f.getParams().get(i).getVar(), scope.getVar(v).get());
+					i++;
+				}
+				
 				thread.callStack.push(new TnBoxCall(thread, f.getCode(), args));
 				// TODO: handle ret vals
 			}
+			break;
 		}
 		case CALL: {
 			List<Variable> dest = (List<Variable>) inst.args[0];
@@ -94,19 +97,22 @@ public class TnBoxCall {
 			// TODO: find overload
 			Function f = (Function) inst.args[2];
 			
-			Map<Variable, TnBoxObject> args = new HashMap<>();
-			
-			for (Variable v : src) {
-				args.put(v, scope.getVar(v).get());
-			}
-			args.put(thisVar, scope.getVar(thisVar).get());
-			
 			if (f.isLibrary()) {
 				// TODO: handle system calls
 			} else {
+				Map<Variable, TnBoxObject> args = new HashMap<>();
+				
+				int i = 0;
+				for (Variable v : src) {
+					args.put(f.getParams().get(i).getVar(), scope.getVar(v).get());
+					i++;
+				}
+				args.put(thisVar, scope.getVar(thisVar).get());
+				
 				thread.callStack.push(new TnBoxCall(thread, f.getCode(), args));
 				// TODO: handle ret vals
 			}
+			break;
 		}
 		}
 		
