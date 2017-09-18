@@ -19,7 +19,7 @@ public class TnBoxThread {
 	 * @param args
 	 */
 	public TnBoxThread(Function f, Map<Variable, TnBoxObject> args) {
-		callStack.push(new TnBoxCall(f.getCode(), args));
+		callStack.push(new TnBoxCall(this, f.getCode(), args));
 	}
 	
 	public void step() {
