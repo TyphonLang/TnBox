@@ -83,7 +83,7 @@ public class TnBoxCall {
 					throw new IllegalArgumentException("No handler for function "+f);
 				}
 				
-				List<TnBoxObject> retVals = handler.execute(code.tni, null, src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				List<TnBoxObject> retVals = handler.execute(thread, code.tni, null, src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
 				
 				int i = 0;
 				for (Variable v : dest) {
@@ -123,7 +123,7 @@ public class TnBoxCall {
 					throw new IllegalArgumentException("No handler for function "+f);
 				}
 				
-				List<TnBoxObject> retVals = handler.execute(code.tni, scope.getVar(thisVar).get(), src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				List<TnBoxObject> retVals = handler.execute(thread, code.tni, scope.getVar(thisVar).get(), src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
 				
 				int i = 0;
 				for (Variable v : dest) {

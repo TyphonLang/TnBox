@@ -1,5 +1,6 @@
 package info.iconmaster.tnbox;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import info.iconmaster.tnbox.libs.CoreFunctions;
 import info.iconmaster.tnbox.libs.TnBoxFunction;
+import info.iconmaster.tnbox.model.TnBoxEnvironment;
 import info.iconmaster.tnbox.model.TnBoxThread;
 import info.iconmaster.typhon.Typhon;
 import info.iconmaster.typhon.TyphonInput;
@@ -93,8 +95,11 @@ public class TnBox {
 				main = mains.get(0);
 			}
 			
+			// setup environ
+			TnBoxEnvironment environ = new TnBoxEnvironment();
+			
 			// execute main
-			new TnBoxThread(main, new HashMap<>()).run();
+			new TnBoxThread(environ, main, new HashMap<>()).run();
 		}
 	}
 }

@@ -8,9 +8,10 @@ import info.iconmaster.typhon.model.Function;
 
 public class TnBoxThread {
 	public Stack<TnBoxCall> callStack = new Stack<>();
+	public TnBoxEnvironment environ;
 	
-	public TnBoxThread() {
-		
+	public TnBoxThread(TnBoxEnvironment environ) {
+		this.environ = environ;
 	}
 	
 	/**
@@ -18,7 +19,8 @@ public class TnBoxThread {
 	 * @param f
 	 * @param args
 	 */
-	public TnBoxThread(Function f, Map<Variable, TnBoxObject> args) {
+	public TnBoxThread(TnBoxEnvironment environ, Function f, Map<Variable, TnBoxObject> args) {
+		this.environ = environ;
 		callStack.push(new TnBoxCall(this, f.getCode(), args));
 	}
 	
