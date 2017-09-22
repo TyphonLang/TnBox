@@ -35,6 +35,20 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {print(1); print(2);}", "12"),
 			new CaseValid("@main void f() {println(1); print(2);}", "1\n2"),
 			new CaseValid("@main void f() {println(1); println(2);}", "1\n2\n"),
+			new CaseValid("@main void f() {if true {print(1);}}", "1"),
+			new CaseValid("@main void f() {if false {print(1);}}", ""),
+			new CaseValid("@main void f() {if true {print(1);} else {print(2);}}", "1"),
+			new CaseValid("@main void f() {if false {print(1);} else {print(2);}}", "2"),
+			new CaseValid("@main void f() {print(1 ?? 2);}", "1"),
+			new CaseValid("@main void f() {print(null ?? 2);}", "2"),
+			new CaseValid("@main void f() {print(true && true);}", "true"),
+			new CaseValid("@main void f() {print(true && false);}", "false"),
+			new CaseValid("@main void f() {print(false && true);}", "false"),
+			new CaseValid("@main void f() {print(false && false);}", "false"),
+			new CaseValid("@main void f() {print(true || true);}", "true"),
+			new CaseValid("@main void f() {print(true || false);}", "true"),
+			new CaseValid("@main void f() {print(false || true);}", "true"),
+			new CaseValid("@main void f() {print(false || false);}", "false"),
 			new CaseValid("@main void f() {}", "")
 		);
 	}

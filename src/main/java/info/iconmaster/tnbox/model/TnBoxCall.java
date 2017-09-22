@@ -147,9 +147,8 @@ public class TnBoxCall {
 		
 		case MOVNULL: {
 			Variable dest = (Variable) inst.args[0];
-			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_ANY), null);
 			
-			scope.setVar(dest, constant);
+			scope.setVar(dest, null);
 			break;
 		}
 		
@@ -321,6 +320,7 @@ public class TnBoxCall {
 		
 		case LABEL: {
 			// do nothing
+			break;
 		}
 		
 		case NOT: {
