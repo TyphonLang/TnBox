@@ -7,12 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import info.iconmaster.tnbox.libs.CoreFunctions;
 import info.iconmaster.tnbox.libs.TnBoxFunction;
 import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
-import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.compiler.Instruction.OpCode;
+import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.CorePackage;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.types.TypeRef;
@@ -65,6 +64,23 @@ public class TnBoxCall {
 			scope.setVar(dest, scope.getVar(src).get());
 			break;
 		}
+		
+		case MOVBYTE: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_BYTE), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVSHORT: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_SHORT), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
 		case MOVINT: {
 			Variable dest = (Variable) inst.args[0];
 			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_INT), inst.args[1]);
@@ -72,6 +88,71 @@ public class TnBoxCall {
 			scope.setVar(dest, constant);
 			break;
 		}
+		
+		case MOVLONG: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_LONG), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVFLOAT: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_FLOAT), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVDOUBLE: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_DOUBLE), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVSTR: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_STRING), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVCHAR: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_CHAR), inst.args[1]);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVTRUE: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_BOOL), true);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVFALSE: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_BOOL), false);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
+		case MOVNULL: {
+			Variable dest = (Variable) inst.args[0];
+			TnBoxObject constant = new TnBoxObject(new TypeRef(core.TYPE_ANY), null);
+			
+			scope.setVar(dest, constant);
+			break;
+		}
+		
 		case CALLSTATIC: {
 			List<Variable> dest = (List<Variable>) inst.args[0];
 			Function f = (Function) inst.args[1];
@@ -109,6 +190,7 @@ public class TnBoxCall {
 			}
 			break;
 		}
+		
 		case CALL: {
 			List<Variable> dest = (List<Variable>) inst.args[0];
 			Variable thisVar = (Variable) inst.args[1];
@@ -150,6 +232,7 @@ public class TnBoxCall {
 			}
 			break;
 		}
+		
 		case INSTANCEOF: {
 			Variable dest = (Variable) inst.args[0];
 			Variable src = (Variable) inst.args[1];
@@ -159,6 +242,7 @@ public class TnBoxCall {
 			scope.setVar(dest, result);
 			break;
 		}
+		
 		case ISNULL: {
 			Variable dest = (Variable) inst.args[0];
 			Variable src = (Variable) inst.args[1];
@@ -169,6 +253,7 @@ public class TnBoxCall {
 			scope.setVar(dest, result);
 			break;
 		}
+		
 		case JUMP: {
 			boolean found = false;
 			int i = 0;
@@ -188,10 +273,33 @@ public class TnBoxCall {
 			break;
 		}
 		
-		case JUMPIF: {
+		case JUMPTRUE: {
 			Variable src = (Variable) inst.args[0];
 			
 			if ((Boolean) scope.getVar(src).get().value) {
+				boolean found = false;
+				int i = 0;
+				for (Instruction inst2 : code.ops) {
+					if (inst2.op == OpCode.LABEL && inst.args[1] == inst2.args[0]) {
+						found = true;
+						pc = i-1;
+						break;
+					}
+					i++;
+				}
+				
+				if (!found) {
+					throw new IllegalArgumentException("label not found");
+				}
+			}
+			
+			break;
+		}
+		
+		case JUMPFALSE: {
+			Variable src = (Variable) inst.args[0];
+			
+			if (!(Boolean) scope.getVar(src).get().value) {
 				boolean found = false;
 				int i = 0;
 				for (Instruction inst2 : code.ops) {
@@ -220,6 +328,25 @@ public class TnBoxCall {
 			Variable src = (Variable) inst.args[1];
 			
 			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), !((Boolean) (scope.getVar(src).get().value))));
+		}
+		
+		case RAWEQ: {
+			// TODO: better == behavior
+			
+			Variable dest = (Variable) inst.args[0];
+			Variable a = (Variable) inst.args[1];
+			Variable b = (Variable) inst.args[2];
+			
+			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), a.equals(b)));
+			break;
+		}
+		
+		case RET: {
+			for (Variable v : (List<Variable>) inst.args[0]) {
+				retVal.add(scope.getVar(v).get());
+			}
+			completed = true;
+			break;
 		}
 		
 		default: {
