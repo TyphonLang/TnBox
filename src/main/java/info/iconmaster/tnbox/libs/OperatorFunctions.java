@@ -62,15 +62,15 @@ public class OperatorFunctions {
 			
 			for (Function f : fs) {
 				if (annot == core.LIB_OPS.ANNOT_ADD) {
-					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.add(b)));
+					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.add(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_SUB) {
-					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.subtract(b)));
+					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.subtract(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_MUL) {
-					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.multiply(b)));
+					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.multiply(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_DIV) {
 					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.divide(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_MOD) {
-					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.remainder(b).abs()));
+					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->a.remainder(b, MathContext.DECIMAL128).abs()));
 				} else if (annot == core.LIB_OPS.ANNOT_BAND) {
 					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().and(b.toBigInteger()))));
 				} else if (annot == core.LIB_OPS.ANNOT_BOR) {
