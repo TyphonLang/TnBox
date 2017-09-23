@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import info.iconmaster.tnbox.libs.CoreFunctions;
+import info.iconmaster.tnbox.libs.OperatorFunctions;
 import info.iconmaster.tnbox.libs.TnBoxFunction;
 import info.iconmaster.tnbox.model.TnBoxEnvironment;
 import info.iconmaster.tnbox.model.TnBoxThread;
@@ -61,7 +62,9 @@ public class TnBox {
 	@TyphonPlugin.OnNewTyphonInput
 	public static void initRegistry(TyphonInput tni) {
 		TnBoxFunction.registry.put(tni, new HashMap<>());
+		
 		CoreFunctions.register(tni);
+		OperatorFunctions.register(tni);
 	}
 	
 	@TyphonPlugin.OnCompilationComplete
