@@ -67,6 +67,13 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {print(4-5*6/4+2*(5/7)-1);}", "-4"),
 			new CaseValid("@main void f() {print(4.0-5*6/4+2*(5/7)-1);}", "-4.0"),
 			new CaseValid("@main void f() {print(4.0-5.0*6/4+2*(5/7)-1);}", "-4.5"),
+			new CaseValid("@main void f() {print(1<2);}", "true"),
+			new CaseValid("@main void f() {print(1.0<2);}", "true"),
+			new CaseValid("@main void f() {print(1<1);}", "false"),
+			new CaseValid("@main void f() {print(1<=1);}", "true"),
+			new CaseValid("@main void f() {print(2>1);}", "true"),
+			new CaseValid("@main void f() {print(2.0>=1);}", "true"),
+			new CaseValid("@main void f() {print(1.0>2 && 1>2.0);}", "false"),
 			new CaseValid("@main void f() {}", "")
 		);
 	}

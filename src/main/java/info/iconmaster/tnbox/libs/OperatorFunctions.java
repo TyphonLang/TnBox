@@ -54,6 +54,26 @@ public class OperatorFunctions {
 		}
 	}
 	
+	public static class BinLogicFunc implements TnBoxFunction {
+		Function f;
+		public java.util.function.BiPredicate<BigDecimal, BigDecimal> op;
+		
+		public BinLogicFunc(Function f, java.util.function.BiPredicate<BigDecimal, BigDecimal> op) {
+			this.f = f;
+			this.op = op;
+		}
+		
+		@Override
+		public List<TnBoxObject> execute(TnBoxThread thread, TyphonInput tni, TnBoxObject thiz, List<TnBoxObject> args) {
+			CorePackage core = tni.corePackage;
+			
+			BigDecimal a = new BigDecimal(thiz.value.toString());
+			BigDecimal b = new BigDecimal(args.get(0).value.toString());
+			
+			return Arrays.asList(new TnBoxObject(f.getRetType().get(0), op.test(a, b)));
+		}
+	}
+	
 	public static void register(TyphonInput tni) {
 		CorePackage core = tni.corePackage;
 		
@@ -81,6 +101,14 @@ public class OperatorFunctions {
 					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().shiftLeft(b.intValue()))));
 				} else if (annot == core.LIB_OPS.ANNOT_SHR) {
 					TnBoxFunction.registry.get(tni).put(f, new BinOpFunc(f,(a,b)->new BigDecimal(a.toBigInteger().shiftRight(b.intValue()))));
+				} else if (annot == core.LIB_OPS.ANNOT_LT) {
+					TnBoxFunction.registry.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) < 0));
+				} else if (annot == core.LIB_OPS.ANNOT_LE) {
+					TnBoxFunction.registry.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) <= 0));
+				} else if (annot == core.LIB_OPS.ANNOT_GT) {
+					TnBoxFunction.registry.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) > 0));
+				} else if (annot == core.LIB_OPS.ANNOT_GE) {
+					TnBoxFunction.registry.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) >= 0));
 				}
 			}
 		}
