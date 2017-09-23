@@ -33,8 +33,6 @@ public class TnBoxCall {
 		for (Variable v : code.vars) {
 			scope.newVar(v);
 		}
-		
-		System.out.println(code);
 	}
 	
 	public TnBoxCall(TnBoxThread thread, CodeBlock code, TnBoxObject thisObject) {
