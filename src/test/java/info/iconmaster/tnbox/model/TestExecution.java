@@ -39,6 +39,7 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {if false {print(1);}}", ""),
 			new CaseValid("@main void f() {if true {print(1);} else {print(2);}}", "1"),
 			new CaseValid("@main void f() {if false {print(1);} else {print(2);}}", "2"),
+			new CaseValid("@main void f() {if false {print(1);} elseif false {print(2);} elseif true {print(3);} else {print(4);}}", "3"),
 			new CaseValid("@main void f() {print(1 ?? 2);}", "1"),
 			new CaseValid("@main void f() {print(null ?? 2);}", "2"),
 			new CaseValid("@main void f() {print(true && true);}", "true"),
@@ -49,6 +50,18 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {print(true || false);}", "true"),
 			new CaseValid("@main void f() {print(false || true);}", "true"),
 			new CaseValid("@main void f() {print(false || false);}", "false"),
+			new CaseValid("@main void f() {print([]);}", "[]"),
+			new CaseValid("@main void f() {print([1]);}", "[1]"),
+			new CaseValid("@main void f() {print([1,2]);}", "[1, 2]"),
+			new CaseValid("@main void f() {print({});}", "{}"),
+			new CaseValid("@main void f() {print({1=2});}", "{1=2}"),
+			new CaseValid("@main void f() {print(if true: 1 else: 0);}", "1"),
+			new CaseValid("@main void f() {print(if false: 1 else: 0);}", "0"),
+			new CaseValid("@main void f() {print(if false: 1 elseif true: 2 else: 3);}", "2"),
+			new CaseValid("@main void f() {print(if false: 1 elseif false: 2 else: 3);}", "3"),
+			new CaseValid("@main void f() {print(if false: 1 elseif false: 2 elseif false: 3 else: 4);}", "4"),
+			new CaseValid("@main void f() {print(if false: 1 elseif true: 2 elseif false: 3 else: 4);}", "2"),
+			new CaseValid("@main void f() {print(if false: 1 elseif false: 2 elseif true: 3 else: 4);}", "3"),
 			new CaseValid("@main void f() {}", "")
 		);
 	}

@@ -14,6 +14,7 @@ import info.iconmaster.typhon.compiler.Instruction.OpCode;
 import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.CorePackage;
 import info.iconmaster.typhon.model.Function;
+import info.iconmaster.typhon.model.TemplateArgument;
 import info.iconmaster.typhon.types.TypeRef;
 
 public class TnBoxCall {
@@ -32,6 +33,8 @@ public class TnBoxCall {
 		for (Variable v : code.vars) {
 			scope.newVar(v);
 		}
+		
+		System.out.println(code);
 	}
 	
 	public TnBoxCall(TnBoxThread thread, CodeBlock code, TnBoxObject thisObject) {
@@ -346,6 +349,54 @@ public class TnBoxCall {
 				retVal.add(scope.getVar(v).get());
 			}
 			completed = true;
+			break;
+		}
+		
+		case MOVLIST: {
+			List<TnBoxObject> list = new ArrayList<>();
+			
+			Variable dest = (Variable) inst.args[0];
+			List<Variable> src = (List<Variable>) inst.args[1];
+			
+			for (Variable v : src) {
+				list.add(scope.getVar(v).get());
+			}
+			
+			TypeRef elemType = new TypeRef(core.TYPE_ANY);
+			if (dest.type.getType() == core.TYPE_LIST && dest.type.getTemplateArgs().size() == 1) {
+				elemType = dest.type.getTemplateArgs().get(0).getValue();
+			}
+			
+			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_LIST, new TemplateArgument(elemType)), list));
+			break;
+		}
+		
+		case MOVMAP: {
+			Map<TnBoxObject, TnBoxObject> list = new HashMap<>();
+			
+			Variable dest = (Variable) inst.args[0];
+			Map<Variable,Variable> src = (Map<Variable,Variable>) inst.args[1];
+			
+			for (Entry<Variable,Variable> entry : src.entrySet()) {
+				list.put(scope.getVar(entry.getKey()).get(), scope.getVar(entry.getValue()).get());
+			}
+			
+			TypeRef keyType = new TypeRef(core.TYPE_ANY);
+			TypeRef valueType = new TypeRef(core.TYPE_ANY);
+			if (dest.type.getType() == core.TYPE_MAP && dest.type.getTemplateArgs().size() == 2) {
+				keyType = dest.type.getTemplateArgs().get(0).getValue();
+				valueType = dest.type.getTemplateArgs().get(1).getValue();
+			}
+			
+			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_MAP, new TemplateArgument(keyType), new TemplateArgument(valueType)), list));
+			break;
+		}
+		
+		case MOVTYPE: {
+			Variable dest = (Variable) inst.args[0];
+			TypeRef src = (TypeRef) inst.args[1];
+			
+			scope.setVar(dest, new TnBoxObject(new TypeRef(core.LIB_REFLECT.TYPE_TYPE), src));
 			break;
 		}
 		

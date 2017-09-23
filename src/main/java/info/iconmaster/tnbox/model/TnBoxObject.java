@@ -10,4 +10,9 @@ public class TnBoxObject {
 		this.value = value;
 		this.type = type;
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
 }
