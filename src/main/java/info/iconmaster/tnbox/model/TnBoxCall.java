@@ -12,9 +12,9 @@ import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
 import info.iconmaster.typhon.compiler.Instruction.OpCode;
 import info.iconmaster.typhon.compiler.Variable;
-import info.iconmaster.typhon.model.CorePackage;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.model.TemplateArgument;
+import info.iconmaster.typhon.model.libs.CorePackage;
 import info.iconmaster.typhon.types.TypeRef;
 
 public class TnBoxCall {
@@ -159,7 +159,7 @@ public class TnBoxCall {
 			List<Variable> src = (List<Variable>) inst.args[2];
 			
 			if (f.isLibrary()) {
-				TnBoxFunction handler = TnBoxFunction.registry.get(code.tni).get(f);
+				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
 					throw new IllegalArgumentException("No handler for function "+f);
 				}
@@ -200,7 +200,7 @@ public class TnBoxCall {
 			Function f = (Function) inst.args[2];
 			
 			if (f.isLibrary()) {
-				TnBoxFunction handler = TnBoxFunction.registry.get(code.tni).get(f);
+				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
 					throw new IllegalArgumentException("No handler for function "+f);
 				}
@@ -396,6 +396,21 @@ public class TnBoxCall {
 			TypeRef src = (TypeRef) inst.args[1];
 			
 			scope.setVar(dest, new TnBoxObject(new TypeRef(core.LIB_REFLECT.TYPE_TYPE), src));
+			break;
+		}
+		
+		case ALLOC: {
+			Variable dest = (Variable) inst.args[0];
+			TypeRef src = (TypeRef) inst.args[1];
+			
+			TnBoxObject ob = new TnBoxObject(src, null);
+			if (TnBoxFunction.allocHandlers.get(src.tni).containsKey(src.getType())) {
+				ob.value = TnBoxFunction.allocHandlers.get(src.tni).get(src.getType()).apply(src.tni);
+			} else {
+				ob.value = new TnBoxInstance(src);
+			}
+			
+			scope.setVar(dest, ob);
 			break;
 		}
 		

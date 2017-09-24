@@ -9,9 +9,12 @@ import info.iconmaster.tnbox.libs.CoreFunctions;
 import info.iconmaster.tnbox.libs.OperatorFunctions;
 import info.iconmaster.tnbox.libs.TnBoxFunction;
 import info.iconmaster.tnbox.model.TnBoxEnvironment;
+import info.iconmaster.tnbox.model.TnBoxInstance;
 import info.iconmaster.tnbox.model.TnBoxThread;
 import info.iconmaster.typhon.Typhon;
 import info.iconmaster.typhon.TyphonInput;
+import info.iconmaster.typhon.model.Constructor;
+import info.iconmaster.typhon.model.Field;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.model.Package;
 import info.iconmaster.typhon.plugins.TyphonPlugin;
@@ -61,7 +64,8 @@ public class TnBox {
 	
 	@TyphonPlugin.OnNewTyphonInput
 	public static void initRegistry(TyphonInput tni) {
-		TnBoxFunction.registry.put(tni, new HashMap<>());
+		TnBoxFunction.functionHandlers.put(tni, new HashMap<>());
+		TnBoxFunction.allocHandlers.put(tni, new HashMap<>());
 		
 		CoreFunctions.register(tni);
 		OperatorFunctions.register(tni);
@@ -102,6 +106,43 @@ public class TnBox {
 			
 			// execute main
 			new TnBoxThread(environ, main, new HashMap<>()).run();
+		}
+	}
+	
+	@TyphonPlugin.OnInitDefaultConstructor
+	public static void onDefaultNew(Constructor c) {
+		c.markAsLibrary();
+		
+		TnBoxFunction.functionHandlers.get(c.tni).put(c, (thread, tni, thiz, args)->{
+			return Arrays.asList();
+		});
+	}
+	
+	@TyphonPlugin.OnInitGetter
+	public static void onDefaultGetter(Field f) {
+		if (f.isStatic()) {
+			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+				return Arrays.asList(thread.environ.globalFields.get(f));
+			});
+		} else {
+			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+				TnBoxInstance instance = (TnBoxInstance) thiz.value;
+				return Arrays.asList(instance.fields.get(f));
+			});
+		}
+	}
+	
+	@TyphonPlugin.OnInitSetter
+	public static void onDefaultSetter(Field f) {
+		if (f.isStatic()) {
+			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+				return Arrays.asList(thread.environ.globalFields.put(f, args.get(0)));
+			});
+		} else {
+			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+				TnBoxInstance instance = (TnBoxInstance) thiz.value;
+				return Arrays.asList(instance.fields.put(f, args.get(0)));
+			});
 		}
 	}
 }

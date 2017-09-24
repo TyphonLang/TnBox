@@ -15,4 +15,8 @@ public class TnBoxObject {
 	public String toString() {
 		return String.valueOf(value);
 	}
+	
+	public static TnBoxObject alloc(TypeRef type) {
+		return new TnBoxObject(type, new TnBoxInstance(type));
+	}
 }

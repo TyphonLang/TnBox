@@ -3,6 +3,7 @@ package info.iconmaster.tnbox.model;
 import java.util.Map;
 import java.util.Stack;
 
+import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.Function;
 
