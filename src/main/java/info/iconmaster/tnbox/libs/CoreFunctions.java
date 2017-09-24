@@ -12,12 +12,12 @@ public class CoreFunctions {
 		CorePackage core = tni1.corePackage;
 		
 		TnBoxFunction.functionHandlers.get(tni1).put(core.FUNC_PRINTLN, (thread, tni, thiz, args)->{
-			thread.environ.out.println(args.get(0).value);
+			thread.environ.out.println(args.get(0) == null ? null : args.get(0).value);
 			return Arrays.asList();
 		});
 		
 		TnBoxFunction.functionHandlers.get(tni1).put(core.FUNC_PRINT, (thread, tni, thiz, args)->{
-			thread.environ.out.print(args.get(0).value);
+			thread.environ.out.print(args.get(0) == null ? null : args.get(0).value);
 			return Arrays.asList();
 		});
 	}

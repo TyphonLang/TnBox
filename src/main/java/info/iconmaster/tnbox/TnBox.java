@@ -120,6 +120,8 @@ public class TnBox {
 	
 	@TyphonPlugin.OnInitGetter
 	public static void onDefaultGetter(Field f) {
+		f.getGetter().markAsLibrary();
+		
 		if (f.isStatic()) {
 			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
 				return Arrays.asList(thread.environ.globalFields.get(f));
@@ -134,14 +136,18 @@ public class TnBox {
 	
 	@TyphonPlugin.OnInitSetter
 	public static void onDefaultSetter(Field f) {
+		f.getSetter().markAsLibrary();
+		
 		if (f.isStatic()) {
-			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
-				return Arrays.asList(thread.environ.globalFields.put(f, args.get(0)));
+			TnBoxFunction.functionHandlers.get(f.tni).put(f.getSetter(), (thread, tni, thiz, args)->{
+				thread.environ.globalFields.put(f, args.get(0));
+				return Arrays.asList();
 			});
 		} else {
-			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+			TnBoxFunction.functionHandlers.get(f.tni).put(f.getSetter(), (thread, tni, thiz, args)->{
 				TnBoxInstance instance = (TnBoxInstance) thiz.value;
-				return Arrays.asList(instance.fields.put(f, args.get(0)));
+				instance.fields.put(f, args.get(0));
+				return Arrays.asList();
 			});
 		}
 	}
