@@ -329,6 +329,7 @@ public class TnBoxCall {
 			Variable src = (Variable) inst.args[1];
 			
 			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), !((Boolean) (scope.getVar(src).get().value))));
+			break;
 		}
 		
 		case RAWEQ: {

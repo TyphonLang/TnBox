@@ -1,8 +1,8 @@
 package info.iconmaster.tnbox.libs;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +13,7 @@ import info.iconmaster.typhon.model.AnnotationDefinition;
 import info.iconmaster.typhon.model.CorePackage;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.types.Type;
+import info.iconmaster.typhon.types.TypeRef;
 
 public class OperatorFunctions {
 	private OperatorFunctions() {}
@@ -109,6 +110,52 @@ public class OperatorFunctions {
 					TnBoxFunction.registry.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) > 0));
 				} else if (annot == core.LIB_OPS.ANNOT_GE) {
 					TnBoxFunction.registry.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) >= 0));
+				} else if (annot == core.LIB_OPS.ANNOT_NEG) {
+					TnBoxFunction.registry.get(tni).put(f, (thread, __, thiz, args) -> {
+						BigDecimal a = new BigDecimal(thiz.value.toString()).negate();
+						
+						TnBoxObject result = new TnBoxObject(thiz.type, null);
+						
+						Type t = thiz.type.getType();
+						if (t == core.TYPE_BYTE || t == core.TYPE_UBYTE) {
+							result.value = a.byteValue();
+						} else if (t == core.TYPE_SHORT || t == core.TYPE_USHORT) {
+							result.value = a.shortValue();
+						} else if (t == core.TYPE_INT || t == core.TYPE_UINT || t == core.TYPE_NUMBER) {
+							result.value = a.intValue();
+						} else if (t == core.TYPE_LONG || t == core.TYPE_ULONG) {
+							result.value = a.longValue();
+						} else if (t == core.TYPE_FLOAT) {
+							result.value = a.floatValue();
+						} else if (t == core.TYPE_DOUBLE) {
+							result.value = a.doubleValue();
+						}
+						
+						return Arrays.asList(result);
+					});
+				} else if (annot == core.LIB_OPS.ANNOT_POS) {
+					TnBoxFunction.registry.get(tni).put(f, (thread, __, thiz, args) -> Arrays.asList(thiz));
+				} else if (annot == core.LIB_OPS.ANNOT_BNOT) {
+					TnBoxFunction.registry.get(tni).put(f, (thread, __, thiz, args) -> {
+						BigInteger a = new BigInteger(thiz.value.toString()).not();
+						
+						TnBoxObject result = new TnBoxObject(thiz.type, null);
+						
+						Type t = thiz.type.getType();
+						if (t == core.TYPE_BYTE || t == core.TYPE_UBYTE) {
+							result.value = a.byteValue();
+						} else if (t == core.TYPE_SHORT || t == core.TYPE_USHORT) {
+							result.value = a.shortValue();
+						} else if (t == core.TYPE_INT || t == core.TYPE_UINT || t == core.TYPE_NUMBER) {
+							result.value = a.intValue();
+						} else if (t == core.TYPE_LONG || t == core.TYPE_ULONG) {
+							result.value = a.longValue();
+						}
+						
+						return Arrays.asList(result);
+					});
+				} else if (annot == core.LIB_OPS.ANNOT_EQ) {
+					TnBoxFunction.registry.get(tni).put(f, (thread, __, thiz, args) -> Arrays.asList(new TnBoxObject(new TypeRef(core.TYPE_BOOL), thiz.value.equals(args.get(0).value))));
 				}
 			}
 		}
