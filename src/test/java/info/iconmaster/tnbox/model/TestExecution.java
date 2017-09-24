@@ -83,6 +83,11 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {print(1 != 1);}", "false"),
 			new CaseValid("@main void f() {print(1 != 2);}", "true"),
 			new CaseValid("@main void f() {print(1.0 == 1.0 && 1.0 != 2.0);}", "true"),
+			new CaseValid("@main void f() {switch 0 {case 0 {print('z');} case 1 {print('o');} case 2 {print('t');}}}", "z"),
+			new CaseValid("@main void f() {switch 1 {case 0 {print('z');} case 1 {print('o');} case 2 {print('t');}}}", "o"),
+			new CaseValid("@main void f() {switch 2 {case 0 {print('z');} case 1 {print('o');} case 2 {print('t');}}}", "t"),
+			new CaseValid("@main void f() {switch 3 {case 0 {print('z');} case 1 {print('o');} case 2 {print('t');}}}", ""),
+			new CaseValid("@main void f() {switch 3 {case 0 {print('z');} case 1,2 {print('n');} default {print('d');}}}", "d"),
 			new CaseValid("@main void f() {}", "")
 		);
 	}
