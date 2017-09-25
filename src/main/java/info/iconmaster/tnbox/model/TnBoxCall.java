@@ -244,10 +244,9 @@ public class TnBoxCall {
 					args.put(f.getParams().get(i).getVar(), scope.getVar(v).get());
 					i++;
 				}
-				args.put(thisVar, scope.getVar(thisVar).get());
+				args.put(f.getCode().instance, thiz);
 				
 				thread.callStack.push(new TnBoxCall(thread, f.getCode(), args));
-				// TODO: handle ret vals
 			}
 			break;
 		}
