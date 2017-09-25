@@ -8,9 +8,11 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import info.iconmaster.tnbox.libs.TnBoxFunction;
+import info.iconmaster.typhon.compiler.CatchInfo;
 import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
 import info.iconmaster.typhon.compiler.Instruction.OpCode;
+import info.iconmaster.typhon.compiler.Label;
 import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.model.TemplateArgument;
@@ -435,6 +437,37 @@ public class TnBoxCall {
 			}
 			
 			scope.setVar(dest, ob);
+			break;
+		}
+		
+		case THROW: {
+			Variable errorVar = (Variable) inst.args[0];
+			
+			TnBoxObject ob = scope.getVar(errorVar).get();
+			TnBoxErrorDetails error = new TnBoxErrorDetails(thread, ob);
+			
+			thread.throwError(error);
+			break;
+		}
+		
+		case TRY: {
+			Label tryId = (Label) inst.args[0];
+			List<CatchInfo> catches = (List<CatchInfo>) inst.args[1];
+			
+			for (CatchInfo info : catches) {
+				thread.errorHandlers.push(new TnBoxErrorHandler(this, tryId, info));
+			}
+			
+			break;
+		}
+		
+		case ENDTRY: {
+			Label tryId = (Label) inst.args[0];
+			
+			while (!thread.errorHandlers.isEmpty()) {
+				if (thread.errorHandlers.peek().tryId != tryId) break;
+				thread.errorHandlers.pop();
+			}
 			break;
 		}
 		
