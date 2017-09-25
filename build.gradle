@@ -12,7 +12,7 @@ version = '0.1.4'
 def mainClass = 'info.iconmaster.tnbox.TnBox'
 def processedSrcDir = "${buildDir}/generated-src/java/main"
 
-def typhonVersion = '0.3.9'
+def typhonVersion = '0.3.10'
 
 // define sources
 
