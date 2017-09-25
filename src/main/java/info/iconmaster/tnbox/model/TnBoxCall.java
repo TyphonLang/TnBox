@@ -196,9 +196,19 @@ public class TnBoxCall {
 			Variable thisVar = (Variable) inst.args[1];
 			List<Variable> src = (List<Variable>) inst.args[3];
 			
-			// TODO: find overload
+			// find the correct override of f
 			Function f = (Function) inst.args[2];
 			
+			List<Function> overrides = f.getVirtualOverrides();
+			for (int i = overrides.size()-1; i >= 0; i--) {
+				Function override = overrides.get(i);
+				if (thisVar.type.canCastTo(new TypeRef(override.getFieldOf()))) {
+					f = override;
+					break;
+				}
+			}
+			
+			// call it
 			if (f.isLibrary()) {
 				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
