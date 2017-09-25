@@ -407,7 +407,7 @@ public class TnBoxCall {
 			if (TnBoxFunction.allocHandlers.get(src.tni).containsKey(src.getType())) {
 				ob.value = TnBoxFunction.allocHandlers.get(src.tni).get(src.getType()).apply(src.tni);
 			} else {
-				ob.value = new TnBoxInstance(src);
+				ob.value = new TnBoxInstance();
 			}
 			
 			scope.setVar(dest, ob);
