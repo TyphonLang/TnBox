@@ -1,15 +1,17 @@
 package info.iconmaster.tnbox.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.Function;
 
 public class TnBoxThread {
 	public Stack<TnBoxCall> callStack = new Stack<>();
 	public TnBoxEnvironment environ;
+	public List<TnBoxObject> retVal = new ArrayList<>();
 	
 	public TnBoxThread(TnBoxEnvironment environ) {
 		this.environ = environ;
@@ -27,7 +29,9 @@ public class TnBoxThread {
 	
 	public void step() {
 		while (!callStack.isEmpty() && callStack.peek().completed) {
-			callStack.pop();
+			TnBoxCall call = callStack.pop();
+			retVal.clear();
+			retVal.addAll(call.retVal);
 		}
 		
 		if (callStack.isEmpty()) {

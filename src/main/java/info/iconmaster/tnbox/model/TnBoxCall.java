@@ -25,6 +25,7 @@ public class TnBoxCall {
 	public int pc;
 	public List<TnBoxObject> retVal = new ArrayList<>();
 	public boolean completed;
+	public List<Variable> waitingforRet;
 	
 	public TnBoxCall(TnBoxThread thread, CodeBlock code) {
 		this.thread = thread;
@@ -52,6 +53,20 @@ public class TnBoxCall {
 		if (completed || pc >= code.ops.size()) {
 			completed = true;
 			return;
+		}
+		
+		if (waitingforRet != null) {
+			int i = 0;
+			for (Variable v : waitingforRet) {
+				if (i >= thread.retVal.size()) break;
+				TnBoxObject ob = thread.retVal.get(i);
+				scope.getVar(v).set(ob);
+				
+				i++;
+			}
+			
+			thread.retVal.clear();
+			waitingforRet = null;
 		}
 		
 		CorePackage core = code.tni.corePackage;
@@ -154,7 +169,7 @@ public class TnBoxCall {
 		}
 		
 		case CALLSTATIC: {
-			List<Variable> dest = (List<Variable>) inst.args[0];
+			List<Variable> dest = waitingforRet = (List<Variable>) inst.args[0];
 			Function f = (Function) inst.args[1];
 			List<Variable> src = (List<Variable>) inst.args[2];
 			
@@ -186,13 +201,12 @@ public class TnBoxCall {
 				}
 				
 				thread.callStack.push(new TnBoxCall(thread, f.getCode(), args));
-				// TODO: handle ret vals
 			}
 			break;
 		}
 		
 		case CALL: {
-			List<Variable> dest = (List<Variable>) inst.args[0];
+			List<Variable> dest = waitingforRet = (List<Variable>) inst.args[0];
 			Variable thisVar = (Variable) inst.args[1];
 			List<Variable> src = (List<Variable>) inst.args[3];
 			
