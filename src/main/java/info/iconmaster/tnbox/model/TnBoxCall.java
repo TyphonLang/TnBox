@@ -171,7 +171,7 @@ public class TnBoxCall {
 		}
 		
 		case CALLSTATIC: {
-			List<Variable> dest = waitingforRet = (List<Variable>) inst.args[0];
+			List<Variable> dest = (List<Variable>) inst.args[0];
 			Function f = (Function) inst.args[1];
 			List<Variable> src = (List<Variable>) inst.args[2];
 			
@@ -194,6 +194,7 @@ public class TnBoxCall {
 					i++;
 				}
 			} else {
+				waitingforRet = dest;
 				Map<Variable, TnBoxObject> args = new HashMap<>();
 				
 				int i = 0;
@@ -208,7 +209,7 @@ public class TnBoxCall {
 		}
 		
 		case CALL: {
-			List<Variable> dest = waitingforRet = (List<Variable>) inst.args[0];
+			List<Variable> dest = (List<Variable>) inst.args[0];
 			List<Variable> src = (List<Variable>) inst.args[3];
 			
 			Variable thisVar = (Variable) inst.args[1];
@@ -237,6 +238,7 @@ public class TnBoxCall {
 					i++;
 				}
 			} else {
+				waitingforRet = dest;
 				Map<Variable, TnBoxObject> args = new HashMap<>();
 				
 				int i = 0;
