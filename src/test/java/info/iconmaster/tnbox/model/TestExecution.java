@@ -91,6 +91,7 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("class a {} @main void f() {a a = new a();}", ""),
 			new CaseValid("class a {new() {print('A');}} @main void f() {a a = new a();}", "A"),
 			new CaseValid("class a {int x;} @main void f() {a a = new a(); a.x = 5; print(a.x);}", "5"),
+			new CaseValid("@main void f() {print(new int(2.0));}", "2"),
 			new CaseValid("@main void f() {}", "")
 		);
 	}
