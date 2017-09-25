@@ -19,6 +19,7 @@ import info.iconmaster.typhon.model.Package;
 import info.iconmaster.typhon.model.TyphonModelReader;
 import info.iconmaster.typhon.plugins.PluginLoader;
 import info.iconmaster.typhon.plugins.TyphonPlugin;
+import info.iconmaster.typhon.types.TyphonAnnotChecker;
 import info.iconmaster.typhon.types.TyphonTypeResolver;
 
 /**
@@ -95,6 +96,7 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("class a {void g() {print('a');}} class b : a {@override void g() {print('b');}} @main void f() {b b = new b(); b.g();}", "b"),
 			new CaseValid("int g() {return 6;} @main void f() {print(g());}", "6"),
 			new CaseValid("@main void f() {try {} catch Error e {}}", ""),
+			new CaseValid("class AI : Iterator<int> {int i; @override bool done() {return i <= 0;} @override int next() {i = i-1 ?? 9; return i;}} class A : Iterable<int> {@override Iterator<int> iterator() {return new AI();}} @main void f() {A a = new A(); for int i : a {print(i);}}", "987654321"),
 			new CaseValid("@main void f() {}", "")
 		);
 	}
@@ -119,6 +121,7 @@ public class TestExecution extends TyphonTest {
 			Package p = TyphonModelReader.parseString(tni, input);
 			TyphonLinker.link(p);
 			TyphonTypeResolver.resolve(p);
+			TyphonAnnotChecker.check(p);
 			TyphonCompiler.compile(p);
 			
 			Assert.assertTrue("Errors present in compilation of '"+input+"': "+tni.errors, tni.errors.isEmpty());
