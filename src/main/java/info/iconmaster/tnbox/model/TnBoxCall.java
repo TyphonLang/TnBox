@@ -465,7 +465,7 @@ public class TnBoxCall {
 			Label tryId = (Label) inst.args[0];
 			
 			while (!thread.errorHandlers.isEmpty()) {
-				if (thread.errorHandlers.peek().call == this && thread.errorHandlers.peek().tryId != tryId) break;
+				if (thread.errorHandlers.peek().call != this || thread.errorHandlers.peek().tryId != tryId) break;
 				thread.errorHandlers.pop();
 			}
 			break;

@@ -99,7 +99,7 @@ public class TnBoxThread {
 		
 		// remove all other handlers of this tryId
 		while (!errorHandlers.isEmpty()) {
-			if (errorHandlers.peek().call == handler.call && errorHandlers.peek().tryId != handler.tryId) break;
+			if (errorHandlers.peek().call != handler.call || errorHandlers.peek().tryId != handler.tryId) break;
 			errorHandlers.pop();
 		}
 	}
