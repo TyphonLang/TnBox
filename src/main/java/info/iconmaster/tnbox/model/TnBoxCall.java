@@ -209,20 +209,13 @@ public class TnBoxCall {
 		
 		case CALL: {
 			List<Variable> dest = waitingforRet = (List<Variable>) inst.args[0];
-			Variable thisVar = (Variable) inst.args[1];
 			List<Variable> src = (List<Variable>) inst.args[3];
 			
-			// find the correct override of f
-			Function f = (Function) inst.args[2];
+			Variable thisVar = (Variable) inst.args[1];
+			TnBoxObject thiz = scope.getVar(thisVar).get();
 			
-			List<Function> overrides = f.getVirtualOverrides();
-			for (int i = overrides.size()-1; i >= 0; i--) {
-				Function override = overrides.get(i);
-				if (thisVar.type.canCastTo(new TypeRef(override.getFieldOf()))) {
-					f = override;
-					break;
-				}
-			}
+			// find the correct override of f
+			Function f = ((Function) inst.args[2]).getVirtualOverride(thiz.type.getType());
 			
 			// call it
 			if (f.isLibrary()) {
@@ -231,7 +224,7 @@ public class TnBoxCall {
 					throw new IllegalArgumentException("No handler for function "+f);
 				}
 				
-				List<TnBoxObject> retVals = handler.execute(thread, code.tni, scope.getVar(thisVar).get(), src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				List<TnBoxObject> retVals = handler.execute(thread, code.tni, thiz, src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
 				
 				int i = 0;
 				for (Variable v : dest) {
