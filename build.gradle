@@ -7,7 +7,7 @@ apply plugin: 'antlr'
 // variables
 
 group = 'info.iconmaster'
-version = '0.1.4'
+version = '0.1.5'
 
 def mainClass = 'info.iconmaster.tnbox.TnBox'
 def processedSrcDir = "${buildDir}/generated-src/java/main"
