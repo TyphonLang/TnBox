@@ -178,12 +178,25 @@ public class TnBoxCall {
 			if (f.isLibrary()) {
 				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
-					throw new IllegalArgumentException("No handler for function "+f);
+					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.getName(), null);
+					break;
 				}
 				
-				List<TnBoxObject> retVals = handler.execute(thread, code.tni, null, src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				List<TnBoxObject> argValues = src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList());
 				
 				int i = 0;
+				for (TnBoxObject arg : argValues) {
+					Variable v = src.get(i);
+					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						break;
+					}
+					i++;
+				}
+				
+				List<TnBoxObject> retVals = handler.execute(thread, code.tni, null, argValues);
+				
+				i = 0;
 				for (Variable v : dest) {
 					if (i < retVals.size()) {
 						scope.setVar(v, retVals.get(i));
@@ -199,7 +212,14 @@ public class TnBoxCall {
 				
 				int i = 0;
 				for (Variable v : src) {
-					args.put(f.getParams().get(i).getVar(), scope.getVar(v).get());
+					TnBoxObject arg = scope.getVar(v).get();
+					
+					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						break;
+					}
+					
+					args.put(f.getParams().get(i).getVar(), arg);
 					i++;
 				}
 				
@@ -215,6 +235,11 @@ public class TnBoxCall {
 			Variable thisVar = (Variable) inst.args[1];
 			TnBoxObject thiz = scope.getVar(thisVar).get();
 			
+			if (thiz == null || thiz.value == null) {
+				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "callee of method "+((Function) inst.args[2]).getName()+" was null", null);
+				break;
+			}
+			
 			// find the correct override of f
 			Function f = ((Function) inst.args[2]).getVirtualOverride(thiz.type.getType());
 			
@@ -222,12 +247,25 @@ public class TnBoxCall {
 			if (f.isLibrary()) {
 				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
-					throw new IllegalArgumentException("No handler for function "+f);
+					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.getName(), null);
+					break;
 				}
 				
-				List<TnBoxObject> retVals = handler.execute(thread, code.tni, thiz, src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList()));
+				List<TnBoxObject> argValues = src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList());
 				
 				int i = 0;
+				for (TnBoxObject arg : argValues) {
+					Variable v = src.get(i);
+					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						break;
+					}
+					i++;
+				}
+				
+				List<TnBoxObject> retVals = handler.execute(thread, code.tni, thiz, argValues);
+				
+				i = 0;
 				for (Variable v : dest) {
 					if (i < retVals.size()) {
 						scope.setVar(v, retVals.get(i));
@@ -243,7 +281,14 @@ public class TnBoxCall {
 				
 				int i = 0;
 				for (Variable v : src) {
-					args.put(f.getParams().get(i).getVar(), scope.getVar(v).get());
+					TnBoxObject arg = scope.getVar(v).get();
+					
+					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						break;
+					}
+					
+					args.put(f.getParams().get(i).getVar(), arg);
 					i++;
 				}
 				args.put(f.getCode().instance, thiz);
@@ -258,8 +303,14 @@ public class TnBoxCall {
 			Variable src = (Variable) inst.args[1];
 			TypeRef expectedType = (TypeRef) inst.args[2];
 			
-			TnBoxObject result = new TnBoxObject(new TypeRef(core.TYPE_BOOL), scope.getVar(src).get().type.canCastTo(expectedType));
-			scope.setVar(dest, result);
+			TnBoxObject ob = scope.getVar(src).get();
+			
+			if (ob == null || ob.value == null) {
+				scope.setVar(dest, new TnBoxObject(core.TYPE_BOOL, false));
+			} else {
+				TnBoxObject result = new TnBoxObject(core.TYPE_BOOL, ob.type.canCastTo(expectedType));
+				scope.setVar(dest, result);
+			}
 			break;
 		}
 		
@@ -287,7 +338,8 @@ public class TnBoxCall {
 			}
 			
 			if (!found) {
-				throw new IllegalArgumentException("label not found");
+				thread.throwError(inst.tni.corePackage.TYPE_ERROR_INTERNAL, "label not found", null);
+				break;
 			}
 			
 			break;
@@ -309,7 +361,8 @@ public class TnBoxCall {
 				}
 				
 				if (!found) {
-					throw new IllegalArgumentException("label not found");
+					thread.throwError(inst.tni.corePackage.TYPE_ERROR_INTERNAL, "label not found", null);
+					break;
 				}
 			}
 			
@@ -332,7 +385,8 @@ public class TnBoxCall {
 				}
 				
 				if (!found) {
-					throw new IllegalArgumentException("label not found");
+					thread.throwError(inst.tni.corePackage.TYPE_ERROR_INTERNAL, "label not found", null);
+					break;
 				}
 			}
 			
@@ -348,7 +402,14 @@ public class TnBoxCall {
 			Variable dest = (Variable) inst.args[0];
 			Variable src = (Variable) inst.args[1];
 			
-			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), !((Boolean) (scope.getVar(src).get().value))));
+			TnBoxObject ob = scope.getVar(src).get();
+			
+			if (ob == null || ob.value == null) {
+				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "cannot find boolean NOT of null", null);
+				break;
+			} else {
+				scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), !((Boolean) (ob.value))));
+			}
 			break;
 		}
 		
@@ -359,7 +420,10 @@ public class TnBoxCall {
 			Variable a = (Variable) inst.args[1];
 			Variable b = (Variable) inst.args[2];
 			
-			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), a.equals(b)));
+			TnBoxObject oa = scope.getVar(a).get();
+			TnBoxObject ob = scope.getVar(b).get();
+			
+			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), oa == null ? ob == null : oa.equals(ob)));
 			break;
 		}
 		
@@ -438,6 +502,12 @@ public class TnBoxCall {
 			Variable errorVar = (Variable) inst.args[0];
 			
 			TnBoxObject ob = scope.getVar(errorVar).get();
+			
+			if (ob == null || ob.value == null) {
+				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "attempt to throw null", null);
+				break;
+			}
+			
 			TnBoxErrorDetails error = new TnBoxErrorDetails(thread, ob);
 			
 			thread.throwError(error);

@@ -1,5 +1,6 @@
 package info.iconmaster.tnbox.model;
 
+import info.iconmaster.typhon.types.Type;
 import info.iconmaster.typhon.types.TypeRef;
 
 public class TnBoxObject {
@@ -9,6 +10,11 @@ public class TnBoxObject {
 	public TnBoxObject(TypeRef type, Object value) {
 		this.value = value;
 		this.type = type;
+	}
+	
+	public TnBoxObject(Type type, Object value) {
+		this.value = value;
+		this.type = new TypeRef(type);
 	}
 	
 	@Override

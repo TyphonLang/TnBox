@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.compiler.Instruction;
-import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.compiler.Instruction.OpCode;
+import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.Function;
+import info.iconmaster.typhon.types.Type;
 
 public class TnBoxThread {
 	public Stack<TnBoxCall> callStack = new Stack<>();
@@ -73,7 +75,18 @@ public class TnBoxThread {
 		if (handler == null) {
 			// no handler found, print exception to stderr and exit
 			this.error = error;
-			environ.err.println("runtime error: "+error.thrown.type.getName());
+			TyphonInput tni = error.thrown.type.tni;
+			TnBoxInstance instance = (TnBoxInstance) error.thrown.value;
+			
+			StringBuilder sb = new StringBuilder("runtime error: ");
+			sb.append(error.thrown.type.getName());
+			
+			if (instance.fields.containsKey(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE)) {
+				sb.append(": ");
+				sb.append(instance.fields.get(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE));
+			}
+			
+			environ.err.println(sb.toString());
 			// TODO: provide stack trace
 			return;
 		}
@@ -102,5 +115,13 @@ public class TnBoxThread {
 			if (errorHandlers.peek().call != handler.call || errorHandlers.peek().tryId != handler.tryId) break;
 			errorHandlers.pop();
 		}
+	}
+	
+	public void throwError(Type type, String message, TnBoxObject cause) {
+		TnBoxInstance instance = new TnBoxInstance();
+		instance.fields.put(type.tni.corePackage.TYPE_ERROR.FIELD_MESSAGE, new TnBoxObject(type.tni.corePackage.TYPE_STRING, message));
+		instance.fields.put(type.tni.corePackage.TYPE_ERROR.FIELD_CAUSE, cause);
+		
+		throwError(new TnBoxErrorDetails(this, new TnBoxObject(type, instance)));
 	}
 }

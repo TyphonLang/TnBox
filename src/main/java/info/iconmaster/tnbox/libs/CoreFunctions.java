@@ -25,7 +25,7 @@ public class CoreFunctions {
 		
 		tni1.corePackage.getTypes().stream().filter(t->t instanceof CoreTypeNumber).map(t->(CoreTypeNumber) t).forEach(t->{
 			TnBoxFunction.allocHandlers.get(tni1).put(t, (tni)->{
-				return null;
+				return new Object();
 			});
 			
 			TnBoxFunction.functionHandlers.get(tni1).put(t.FUNC_NEW_FROM_NUM, (thread, tni, thiz, args)->{

@@ -64,7 +64,7 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {print(if false: 1 elseif true: 2 elseif false: 3 else: 4);}", "2"),
 			new CaseValid("@main void f() {print(if false: 1 elseif false: 2 elseif true: 3 else: 4);}", "3"),
 			new CaseValid("@main void f() {print(1+1);}", "2"),
-			new CaseValid("@main void f() {print((1 as byte)+(1 as double));}", "2.0"),
+			new CaseValid("@main void f() {print((1 as byte)+(1.0 as float));}", "2.0"),
 			new CaseValid("@main void f() {print(4-5*6/4+2*(5/7)-1);}", "-4"),
 			new CaseValid("@main void f() {print(4.0-5*6/4+2*(5/7)-1);}", "-4.0"),
 			new CaseValid("@main void f() {print(4.0-5.0*6/4+2*(5/7)-1);}", "-4.5"),
@@ -102,12 +102,13 @@ public class TestExecution extends TyphonTest {
 	}
     
     private static class CaseValid implements Runnable {
-    	String input, outputExpected, outputGot;
+    	String input, outputExpected, outputGot, errGot;
     	
 		public CaseValid(String input, String output) {
 			this.input = input;
 			this.outputExpected = output;
 			outputGot = "";
+			errGot = "";
 		}
 		
 		@Override
@@ -136,11 +137,14 @@ public class TestExecution extends TyphonTest {
 				}
 			});
 			environ.err = new PrintStream(new OutputStream() {
-				@Override public void write(int b) throws IOException {}
+				@Override public void write(int b) throws IOException {
+					errGot += (char) b;
+				}
 			});
 			
 			new TnBoxThread(environ, f, new HashMap<>()).run();
 			
+			Assert.assertTrue("Test '"+input+"' failed: got error ouput: "+errGot, errGot.isEmpty());
 			Assert.assertTrue("Test '"+input+"' failed: expected '"+outputExpected+"', got '"+outputGot+"'", outputGot.replaceAll("\r\n", "\n").equals(outputExpected));
 		}
     }
