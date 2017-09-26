@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import info.iconmaster.tnbox.model.TnBoxErrorDetails.StackTraceItem;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.compiler.Instruction;
 import info.iconmaster.typhon.compiler.Instruction.OpCode;
@@ -30,7 +31,7 @@ public class TnBoxThread {
 	 */
 	public TnBoxThread(TnBoxEnvironment environ, Function f, Map<Variable, TnBoxObject> args) {
 		this.environ = environ;
-		callStack.push(new TnBoxCall(this, f.getCode(), args));
+		callStack.push(new TnBoxCall(this, f, f.getCode(), args));
 	}
 	
 	public void step() {
@@ -87,7 +88,10 @@ public class TnBoxThread {
 			}
 			
 			environ.err.println(sb.toString());
-			// TODO: provide stack trace
+			for (StackTraceItem item : error.stackTrace) {
+				environ.err.print("\tat ");
+				environ.err.println(item);
+			}
 			return;
 		}
 		

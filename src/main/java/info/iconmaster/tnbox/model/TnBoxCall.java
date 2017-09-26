@@ -16,6 +16,7 @@ import info.iconmaster.typhon.compiler.Label;
 import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.model.TemplateArgument;
+import info.iconmaster.typhon.model.TyphonModelEntity;
 import info.iconmaster.typhon.model.libs.CorePackage;
 import info.iconmaster.typhon.types.TypeRef;
 
@@ -23,28 +24,30 @@ public class TnBoxCall {
 	public TnBoxThread thread;
 	public CodeBlock code;
 	public TnBoxScope scope = new TnBoxScope();
+	public TyphonModelEntity source;
 	
 	public int pc;
 	public List<TnBoxObject> retVal = new ArrayList<>();
 	public boolean completed;
 	public List<Variable> waitingforRet;
 	
-	public TnBoxCall(TnBoxThread thread, CodeBlock code) {
+	public TnBoxCall(TnBoxThread thread, TyphonModelEntity source, CodeBlock code) {
 		this.thread = thread;
 		this.code = code;
+		this.source = source;
 		
 		for (Variable v : code.vars) {
 			scope.newVar(v);
 		}
 	}
 	
-	public TnBoxCall(TnBoxThread thread, CodeBlock code, TnBoxObject thisObject) {
-		this(thread, code);
+	public TnBoxCall(TnBoxThread thread, TyphonModelEntity source, CodeBlock code, TnBoxObject thisObject) {
+		this(thread, source, code);
 		if (thisObject != null && code.instance != null) scope.setVar(code.instance, thisObject);
 	}
 	
-	public TnBoxCall(TnBoxThread thread, CodeBlock code, Map<Variable, TnBoxObject> args) {
-		this(thread, code);
+	public TnBoxCall(TnBoxThread thread, TyphonModelEntity source, CodeBlock code, Map<Variable, TnBoxObject> args) {
+		this(thread, source, code);
 		
 		for (Entry<Variable, TnBoxObject> entry : args.entrySet()) {
 			scope.setVar(entry.getKey(), entry.getValue());
@@ -223,7 +226,7 @@ public class TnBoxCall {
 					i++;
 				}
 				
-				thread.callStack.push(new TnBoxCall(thread, f.getCode(), args));
+				thread.callStack.push(new TnBoxCall(thread, f, f.getCode(), args));
 			}
 			break;
 		}
@@ -293,7 +296,7 @@ public class TnBoxCall {
 				}
 				args.put(f.getCode().instance, thiz);
 				
-				thread.callStack.push(new TnBoxCall(thread, f.getCode(), args));
+				thread.callStack.push(new TnBoxCall(thread, f, f.getCode(), args));
 			}
 			break;
 		}
