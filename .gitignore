@@ -1,7 +1,7 @@
 # gradle
 /.gradle/
 /gradle.properties
-/libs/
+/lib/
 
 # java
 /hs_err_pid*
