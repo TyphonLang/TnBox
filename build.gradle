@@ -14,6 +14,13 @@ def processedSrcDir = "${buildDir}/generated-src/java/main"
 
 def typhonVersion = '0.3.10'
 
+def typhonJar
+if (hasProperty('fromMaven')) {
+	typhonJar = "info.iconmaster:typhon:${typhonVersion}"
+} else {
+	typhonJar = files("libs/typhon-${typhonVersion}.jar")
+}
+
 // define sources
 
 repositories {
@@ -26,7 +33,7 @@ repositories {
 }
 
 dependencies {
-	compile 'info.iconmaster:typhon:'+typhonVersion
+	compile typhonJar
 	testCompile "junit:junit:4.12"
 	antlr "org.antlr:antlr4:4.5"
 }
