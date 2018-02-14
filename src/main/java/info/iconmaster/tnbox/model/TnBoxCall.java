@@ -78,6 +78,7 @@ public class TnBoxCall {
 		CorePackage core = code.tni.corePackage;
 		Instruction inst = code.ops.get(pc);
 		
+		opSwitch:
 		switch (inst.op) {
 		case MOV: {
 			Variable dest = (Variable) inst.args[0];
@@ -183,7 +184,7 @@ public class TnBoxCall {
 				TnBoxFunction handler = TyphonInputData.registry.get(code.tni).functionHandlers.get(f);
 				if (handler == null) {
 					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.prettyPrint(), null);
-					break;
+					break opSwitch;
 				}
 				
 				List<TnBoxObject> argValues = src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList());
@@ -193,7 +194,7 @@ public class TnBoxCall {
 					Variable v = src.get(i);
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
 						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
-						break;
+						break opSwitch;
 					}
 					i++;
 				}
@@ -220,7 +221,7 @@ public class TnBoxCall {
 					
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
 						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
-						break;
+						break opSwitch;
 					}
 					
 					args.put(f.getParams().get(i).getVar(), arg);
@@ -241,7 +242,7 @@ public class TnBoxCall {
 			
 			if (thiz == null || thiz.value == null) {
 				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "callee of method "+((Function) inst.args[2]).prettyPrint()+" was null", null);
-				break;
+				break opSwitch;
 			}
 			
 			// find the correct override of f
@@ -252,7 +253,7 @@ public class TnBoxCall {
 				TnBoxFunction handler = TyphonInputData.registry.get(code.tni).functionHandlers.get(f);
 				if (handler == null) {
 					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.prettyPrint(), null);
-					break;
+					break opSwitch;
 				}
 				
 				List<TnBoxObject> argValues = src.stream().map(v->scope.getVar(v).get()).collect(Collectors.toList());
@@ -262,7 +263,7 @@ public class TnBoxCall {
 					Variable v = src.get(i);
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
 						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
-						break;
+						break opSwitch;
 					}
 					i++;
 				}
@@ -289,7 +290,7 @@ public class TnBoxCall {
 					
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
 						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
-						break;
+						break opSwitch;
 					}
 					
 					args.put(f.getParams().get(i).getVar(), arg);
@@ -343,7 +344,7 @@ public class TnBoxCall {
 			
 			if (!found) {
 				thread.throwError(inst.tni.corePackage.TYPE_ERROR_INTERNAL, "label not found", null);
-				break;
+				break opSwitch;
 			}
 			
 			break;
@@ -366,7 +367,7 @@ public class TnBoxCall {
 				
 				if (!found) {
 					thread.throwError(inst.tni.corePackage.TYPE_ERROR_INTERNAL, "label not found", null);
-					break;
+					break opSwitch;
 				}
 			}
 			
@@ -390,7 +391,7 @@ public class TnBoxCall {
 				
 				if (!found) {
 					thread.throwError(inst.tni.corePackage.TYPE_ERROR_INTERNAL, "label not found", null);
-					break;
+					break opSwitch;
 				}
 			}
 			
@@ -410,7 +411,7 @@ public class TnBoxCall {
 			
 			if (ob == null || ob.value == null) {
 				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "cannot find boolean NOT of null", null);
-				break;
+				break opSwitch;
 			} else {
 				scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_BOOL), !((Boolean) (ob.value))));
 			}
@@ -509,7 +510,7 @@ public class TnBoxCall {
 			
 			if (ob == null || ob.value == null) {
 				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "attempt to throw null", null);
-				break;
+				break opSwitch;
 			}
 			
 			TnBoxErrorDetails error = new TnBoxErrorDetails(thread, ob);
