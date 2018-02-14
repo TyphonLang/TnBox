@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import info.iconmaster.tnbox.libs.TnBoxFunction;
+import info.iconmaster.tnbox.libs.TyphonInputData;
 import info.iconmaster.typhon.compiler.CatchInfo;
 import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
@@ -179,7 +180,7 @@ public class TnBoxCall {
 			List<Variable> src = (List<Variable>) inst.args[2];
 			
 			if (f.isLibrary()) {
-				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
+				TnBoxFunction handler = TyphonInputData.registry.get(code.tni).functionHandlers.get(f);
 				if (handler == null) {
 					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.prettyPrint(), null);
 					break;
@@ -248,7 +249,7 @@ public class TnBoxCall {
 			
 			// call it
 			if (f.isLibrary()) {
-				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
+				TnBoxFunction handler = TyphonInputData.registry.get(code.tni).functionHandlers.get(f);
 				if (handler == null) {
 					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.prettyPrint(), null);
 					break;
@@ -491,8 +492,8 @@ public class TnBoxCall {
 			TypeRef src = (TypeRef) inst.args[1];
 			
 			TnBoxObject ob = new TnBoxObject(src, null);
-			if (TnBoxFunction.allocHandlers.get(src.tni).containsKey(src.getType())) {
-				ob.value = TnBoxFunction.allocHandlers.get(src.tni).get(src.getType()).apply(src.tni);
+			if (TyphonInputData.registry.get(src.tni).allocHandlers.containsKey(src.getType())) {
+				ob.value = TyphonInputData.registry.get(src.tni).allocHandlers.get(src.getType()).apply(src.tni);
 			} else {
 				ob.value = new TnBoxInstance();
 			}

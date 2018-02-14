@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import info.iconmaster.tnbox.libs.CoreFunctions;
-import info.iconmaster.tnbox.libs.OperatorFunctions;
-import info.iconmaster.tnbox.libs.TnBoxFunction;
+import info.iconmaster.tnbox.libs.TyphonInputData;
 import info.iconmaster.tnbox.model.TnBoxEnvironment;
 import info.iconmaster.tnbox.model.TnBoxInstance;
 import info.iconmaster.tnbox.model.TnBoxThread;
@@ -64,11 +62,7 @@ public class TnBox {
 	
 	@TyphonPlugin.OnNewTyphonInput
 	public static void initRegistry(TyphonInput tni) {
-		TnBoxFunction.functionHandlers.put(tni, new HashMap<>());
-		TnBoxFunction.allocHandlers.put(tni, new HashMap<>());
-		
-		CoreFunctions.register(tni);
-		OperatorFunctions.register(tni);
+		new TyphonInputData(tni);
 	}
 	
 	@TyphonPlugin.OnCompilationComplete
@@ -113,7 +107,7 @@ public class TnBox {
 	public static void onDefaultNew(Constructor c) {
 		c.markAsLibrary();
 		
-		TnBoxFunction.functionHandlers.get(c.tni).put(c, (thread, tni, thiz, args)->{
+		TyphonInputData.registry.get(c.tni).functionHandlers.put(c, (thread, tni, thiz, args)->{
 			return Arrays.asList();
 		});
 	}
@@ -123,11 +117,11 @@ public class TnBox {
 		f.getGetter().markAsLibrary();
 		
 		if (f.isStatic()) {
-			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getGetter(), (thread, tni, thiz, args)->{
 				return Arrays.asList(thread.environ.globalFields.get(f));
 			});
 		} else {
-			TnBoxFunction.functionHandlers.get(f.tni).put(f.getGetter(), (thread, tni, thiz, args)->{
+			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getGetter(), (thread, tni, thiz, args)->{
 				TnBoxInstance instance = (TnBoxInstance) thiz.value;
 				return Arrays.asList(instance.fields.get(f));
 			});
@@ -139,12 +133,12 @@ public class TnBox {
 		f.getSetter().markAsLibrary();
 		
 		if (f.isStatic()) {
-			TnBoxFunction.functionHandlers.get(f.tni).put(f.getSetter(), (thread, tni, thiz, args)->{
+			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getSetter(), (thread, tni, thiz, args)->{
 				thread.environ.globalFields.put(f, args.get(0));
 				return Arrays.asList();
 			});
 		} else {
-			TnBoxFunction.functionHandlers.get(f.tni).put(f.getSetter(), (thread, tni, thiz, args)->{
+			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getSetter(), (thread, tni, thiz, args)->{
 				TnBoxInstance instance = (TnBoxInstance) thiz.value;
 				instance.fields.put(f, args.get(0));
 				return Arrays.asList();

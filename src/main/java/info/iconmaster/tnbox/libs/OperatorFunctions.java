@@ -85,35 +85,35 @@ public class OperatorFunctions {
 			
 			for (Function f : fs) {
 				if (annot == core.LIB_OPS.ANNOT_ADD) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->a.add(b, MathContext.DECIMAL128)));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->a.add(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_SUB) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->a.subtract(b, MathContext.DECIMAL128)));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->a.subtract(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_MUL) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->a.multiply(b, MathContext.DECIMAL128)));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->a.multiply(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_DIV) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->a.divide(b, MathContext.DECIMAL128)));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->a.divide(b, MathContext.DECIMAL128)));
 				} else if (annot == core.LIB_OPS.ANNOT_MOD) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->a.remainder(b, MathContext.DECIMAL128).abs()));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->a.remainder(b, MathContext.DECIMAL128).abs()));
 				} else if (annot == core.LIB_OPS.ANNOT_BAND) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().and(b.toBigInteger()))));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().and(b.toBigInteger()))));
 				} else if (annot == core.LIB_OPS.ANNOT_BOR) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().or(b.toBigInteger()))));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().or(b.toBigInteger()))));
 				} else if (annot == core.LIB_OPS.ANNOT_XOR) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().xor(b.toBigInteger()))));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().xor(b.toBigInteger()))));
 				} else if (annot == core.LIB_OPS.ANNOT_SHL) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().shiftLeft(b.intValue()))));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f, (a,b)->new BigDecimal(a.toBigInteger().shiftLeft(b.intValue()))));
 				} else if (annot == core.LIB_OPS.ANNOT_SHR) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinOpFunc(f,(a,b)->new BigDecimal(a.toBigInteger().shiftRight(b.intValue()))));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinOpFunc(f,(a,b)->new BigDecimal(a.toBigInteger().shiftRight(b.intValue()))));
 				} else if (annot == core.LIB_OPS.ANNOT_LT) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) < 0));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) < 0));
 				} else if (annot == core.LIB_OPS.ANNOT_LE) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) <= 0));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) <= 0));
 				} else if (annot == core.LIB_OPS.ANNOT_GT) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) > 0));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) > 0));
 				} else if (annot == core.LIB_OPS.ANNOT_GE) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) >= 0));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, new BinLogicFunc(f,(a,b)->a.compareTo(b) >= 0));
 				} else if (annot == core.LIB_OPS.ANNOT_NEG) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, (thread, __, thiz, args) -> {
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, (thread, __, thiz, args) -> {
 						BigDecimal a = new BigDecimal(thiz.value.toString()).negate();
 						
 						TnBoxObject result = new TnBoxObject(thiz.type, null);
@@ -138,9 +138,9 @@ public class OperatorFunctions {
 						return Arrays.asList(result);
 					});
 				} else if (annot == core.LIB_OPS.ANNOT_POS) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, (thread, __, thiz, args) -> Arrays.asList(thiz));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, (thread, __, thiz, args) -> Arrays.asList(thiz));
 				} else if (annot == core.LIB_OPS.ANNOT_BNOT) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, (thread, __, thiz, args) -> {
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, (thread, __, thiz, args) -> {
 						BigInteger a = new BigInteger(thiz.value.toString()).not();
 						
 						TnBoxObject result = new TnBoxObject(thiz.type, null);
@@ -161,7 +161,7 @@ public class OperatorFunctions {
 						return Arrays.asList(result);
 					});
 				} else if (annot == core.LIB_OPS.ANNOT_EQ) {
-					TnBoxFunction.functionHandlers.get(tni).put(f, (thread, __, thiz, args) -> Arrays.asList(new TnBoxObject(new TypeRef(core.TYPE_BOOL), thiz.value.equals(args.get(0).value))));
+					TyphonInputData.registry.get(tni).functionHandlers.put(f, (thread, __, thiz, args) -> Arrays.asList(new TnBoxObject(new TypeRef(core.TYPE_BOOL), thiz.value.equals(args.get(0).value))));
 				}
 			}
 		}
