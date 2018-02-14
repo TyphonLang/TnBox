@@ -454,7 +454,7 @@ public class TnBoxCall {
 				elemType = dest.type.getTemplateArgs().get(0).getValue();
 			}
 			
-			scope.setVar(dest, new TnBoxObject(new TypeRef(core.TYPE_LIST, new TemplateArgument(elemType)), list));
+			scope.setVar(dest, new TnBoxObject(new TypeRef(TyphonInputData.registry.get(core.tni).TYPE_LIST, new TemplateArgument(elemType)), list));
 			break;
 		}
 		

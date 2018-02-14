@@ -97,7 +97,12 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("int g() {return 6;} @main void f() {print(g());}", "6"),
 			new CaseValid("@main void f() {try {} catch Error e {}}", ""),
 			new CaseValid("class AI : Iterator<int> {int i; @override bool done() {i = (i ?? 10)-1; return i <= 0;} @override int next() {return i;}} class A : Iterable<int> {@override Iterator<int> iterator() {return new AI();}} @main void f() {A a = new A(); for int i : a {print(i);}}", "987654321"),
-			new CaseValid("@main void f() {}", "")
+			new CaseValid("@main void f() {}", ""),
+			new CaseValid("@main void f() {var a = [1,2,3]; print(a[0]);}", "1"),
+			new CaseValid("@main void f() {var a = [1,2,3]; print(a[1]);}", "2"),
+			new CaseValid("@main void f() {var a = [1,2,3]; print(a[2]);}", "3"),
+			new CaseValid("@main void f() {var a = [1,2,3]; a[0] = 42; print(a[0]);}", "42"),
+			new CaseValid("@main void f() {var a = [0,0,0]; print(a.size);}", "3")
 		);
 	}
     

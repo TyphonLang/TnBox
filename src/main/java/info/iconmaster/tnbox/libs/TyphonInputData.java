@@ -19,6 +19,11 @@ public class TyphonInputData {
 	public static final Map<TyphonInput, TyphonInputData> registry = new HashMap<>();
 	
 	/**
+	 * Internal type definitions.
+	 */
+	public SystemTypeList TYPE_LIST;
+	
+	/**
 	 * The input this extension is mapped to.
 	 */
 	public TyphonInput tni;
@@ -36,6 +41,8 @@ public class TyphonInputData {
 	public TyphonInputData(TyphonInput tni) {
 		this.tni = tni;
 		TyphonInputData.registry.put(tni, this);
+		
+		TYPE_LIST = new SystemTypeList(this);
 		
 		CoreFunctions.register(tni);
 		OperatorFunctions.register(tni);
