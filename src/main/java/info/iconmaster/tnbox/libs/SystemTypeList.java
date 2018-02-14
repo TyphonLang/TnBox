@@ -141,14 +141,14 @@ public class SystemTypeList extends UserType {
 		
 		tniData.functionHandlers.put(FUNC_GET, (thread, tni1, thiz, args)->{
 			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
-			int i = new BigDecimal(args.get(0).value.toString()).intValue();
+			int i = (Integer) args.get(0).value;
 			return Arrays.asList(a.get(i));
 		});
 		
 		tniData.functionHandlers.put(FUNC_SET, (thread, tni1, thiz, args)->{
 			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
 			TnBoxObject v = args.get(0);
-			int i = new BigDecimal(args.get(1).value.toString()).intValue();
+			int i = (Integer) args.get(1).value;
 			
 			a.set(i, v);
 			return Arrays.asList();
