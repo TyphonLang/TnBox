@@ -44,7 +44,7 @@ public class CoreFunctions {
 				} else if (t == core.TYPE_DOUBLE) {
 					thiz.value = arg.doubleValue();
 				} else {
-					throw new IllegalArgumentException("Unknown result type "+t.getName());
+					throw new IllegalArgumentException("Unknown result type "+t.prettyPrint());
 				}
 				
 				return Arrays.asList();
@@ -66,7 +66,7 @@ public class CoreFunctions {
 				} else if (t == core.TYPE_DOUBLE) {
 					thiz.value = arg.doubleValue();
 				} else {
-					throw new IllegalArgumentException("Unknown result type "+t.getName());
+					throw new IllegalArgumentException("Unknown result type "+t.prettyPrint());
 				}
 				
 				return Arrays.asList();

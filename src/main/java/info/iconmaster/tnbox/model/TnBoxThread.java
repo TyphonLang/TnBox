@@ -80,7 +80,7 @@ public class TnBoxThread {
 			TnBoxInstance instance = (TnBoxInstance) error.thrown.value;
 			
 			StringBuilder sb = new StringBuilder("runtime error: ");
-			sb.append(error.thrown.type.getName());
+			sb.append(error.thrown.type.prettyPrint());
 			
 			if (instance.fields.containsKey(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE)) {
 				sb.append(": ");

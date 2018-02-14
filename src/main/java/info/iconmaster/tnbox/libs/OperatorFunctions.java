@@ -50,7 +50,7 @@ public class OperatorFunctions {
 			} else if (t == core.TYPE_DOUBLE) {
 				result.value = op.apply(a, b).doubleValue();
 			} else {
-				throw new IllegalArgumentException("Unknown result type "+t.getName());
+				throw new IllegalArgumentException("Unknown result type "+t.prettyPrint());
 			}
 			
 			return Arrays.asList(result);
@@ -132,7 +132,7 @@ public class OperatorFunctions {
 						} else if (t == core.TYPE_DOUBLE) {
 							result.value = a.doubleValue();
 						} else {
-							throw new IllegalArgumentException("Unknown result type "+t.getName());
+							throw new IllegalArgumentException("Unknown result type "+t.prettyPrint());
 						}
 						
 						return Arrays.asList(result);
@@ -155,7 +155,7 @@ public class OperatorFunctions {
 						} else if (t == core.TYPE_LONG || t == core.TYPE_ULONG) {
 							result.value = a.longValue();
 						} else {
-							throw new IllegalArgumentException("Unknown result type "+t.getName());
+							throw new IllegalArgumentException("Unknown result type "+t.prettyPrint());
 						}
 						
 						return Arrays.asList(result);

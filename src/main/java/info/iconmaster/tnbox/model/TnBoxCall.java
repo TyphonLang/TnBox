@@ -181,7 +181,7 @@ public class TnBoxCall {
 			if (f.isLibrary()) {
 				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
-					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.getName(), null);
+					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.prettyPrint(), null);
 					break;
 				}
 				
@@ -191,7 +191,7 @@ public class TnBoxCall {
 				for (TnBoxObject arg : argValues) {
 					Variable v = src.get(i);
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
-						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
 						break;
 					}
 					i++;
@@ -218,7 +218,7 @@ public class TnBoxCall {
 					TnBoxObject arg = scope.getVar(v).get();
 					
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
-						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
 						break;
 					}
 					
@@ -239,7 +239,7 @@ public class TnBoxCall {
 			TnBoxObject thiz = scope.getVar(thisVar).get();
 			
 			if (thiz == null || thiz.value == null) {
-				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "callee of method "+((Function) inst.args[2]).getName()+" was null", null);
+				thread.throwError(inst.tni.corePackage.TYPE_ERROR_NULL, "callee of method "+((Function) inst.args[2]).prettyPrint()+" was null", null);
 				break;
 			}
 			
@@ -250,7 +250,7 @@ public class TnBoxCall {
 			if (f.isLibrary()) {
 				TnBoxFunction handler = TnBoxFunction.functionHandlers.get(code.tni).get(f);
 				if (handler == null) {
-					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.getName(), null);
+					thread.throwError(f.tni.corePackage.TYPE_ERROR_INTERNAL, "no handler for function "+f.prettyPrint(), null);
 					break;
 				}
 				
@@ -260,7 +260,7 @@ public class TnBoxCall {
 				for (TnBoxObject arg : argValues) {
 					Variable v = src.get(i);
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
-						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
 						break;
 					}
 					i++;
@@ -287,7 +287,7 @@ public class TnBoxCall {
 					TnBoxObject arg = scope.getVar(v).get();
 					
 					if (arg != null && arg.value != null && !arg.type.canCastTo(v.type)) {
-						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.getName()+" to "+v.type.getName(), null);
+						thread.throwError(f.tni.corePackage.TYPE_ERROR_CAST, "cannot cast "+arg.type.prettyPrint()+" to "+v.type.prettyPrint(), null);
 						break;
 					}
 					

@@ -21,7 +21,7 @@ public class TnBoxErrorDetails {
 		
 		@Override
 		public String toString() {
-			return call.source+" ["+source+"]";
+			return call.source.prettyPrint()+" ["+source+"]";
 		}
 	}
 	
