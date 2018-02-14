@@ -21,9 +21,69 @@ import info.iconmaster.typhon.types.UserType;
  *
  */
 public class SystemTypeList extends UserType {
-	public TemplateType T;
+	public static class Iterator extends UserType {
+		public static class Value {
+			ArrayList<TnBoxObject> list;
+			int index;
+			
+			public Value(ArrayList<TnBoxObject> list) {
+				this.list = list;
+				this.index = 0;
+			}
+		}
+		
+		public TemplateType T;
+		
+		public Function FUNC_NEXT, FUNC_DONE;
+		
+		public Iterator(TyphonInputData tniData) {
+			super(tniData.tni, "%SystemListIterator"); markAsLibrary();
+			TyphonInput input = tniData.tni;
+			
+			// add templates
+			getTemplates().add(T = new TemplateType("T", input.corePackage.TYPE_ANY, null));
+			
+			// add parents
+			getParentTypes().add(new TypeRef(input.corePackage.TYPE_ITERATOR, new TemplateArgument(T)));
+			
+			// add method overrides
+			getTypePackage().addFunction(FUNC_NEXT = new Function(tni, "next", new TemplateType[] {
+					
+			}, new Parameter[] {
+					
+			}, new Type[] {
+					T
+			}));
+			Function.setOverride(input.corePackage.TYPE_ITERATOR.FUNC_NEXT, FUNC_NEXT);
+			
+			getTypePackage().addFunction(FUNC_DONE = new Function(tni, "done", new TemplateType[] {
+					
+			}, new Parameter[] {
+					
+			}, new Type[] {
+					tni.corePackage.TYPE_BOOL
+			}));
+			Function.setOverride(input.corePackage.TYPE_ITERATOR.FUNC_DONE, FUNC_DONE);
+			
+			// add TnBox implementation
+			tniData.functionHandlers.put(FUNC_NEXT, (thread, tni1, thiz, args)->{
+				Value v = (Value) thiz.value;
+				TnBoxObject ret = v.list.get(v.index);
+				v.index++;
+				return Arrays.asList(ret);
+			});
+			
+			tniData.functionHandlers.put(FUNC_DONE, (thread, tni1, thiz, args)->{
+				Value v = (Value) thiz.value;
+				return Arrays.asList(new TnBoxObject(tni.corePackage.TYPE_BOOL, v.index >= v.list.size()));
+			});
+		}
+	}
 	
-	public Function FUNC_GET, FUNC_SET, FUNC_SIZE;
+	public TemplateType T;
+	public Iterator TYPE_ITERATOR;
+	
+	public Function FUNC_GET, FUNC_SET, FUNC_SIZE, FUNC_ITERATOR;
 	
 	public SystemTypeList(TyphonInputData tniData) {
 		super(tniData.tni, "%SystemList"); markAsLibrary();
@@ -35,9 +95,12 @@ public class SystemTypeList extends UserType {
 		// add parents
 		getParentTypes().add(new TypeRef(input.corePackage.TYPE_LIST, new TemplateArgument(T)));
 		
+		// add subtypes
+		TYPE_ITERATOR = new Iterator(tniData);
+		
 		// add method overrides
 		getTypePackage().addFunction(FUNC_GET = new Function(tni, "get", new TemplateType[] {
-				
+		
 		}, new Parameter[] {
 				new Parameter(tni, "i", tni.corePackage.TYPE_INT, false)
 		}, new Type[] {
@@ -64,8 +127,16 @@ public class SystemTypeList extends UserType {
 		}));
 		Function.setOverride(input.corePackage.TYPE_LIST.FUNC_SIZE, FUNC_SIZE);
 		
-		// add TnBox implementation
+		getTypePackage().addFunction(FUNC_ITERATOR = new Function(tni, "iterator", new TemplateType[] {
+				
+		}, new Parameter[] {
+				
+		}, new TypeRef[] {
+				new TypeRef(TYPE_ITERATOR, new TemplateArgument(T))
+		}));
+		Function.setOverride(tni.corePackage.TYPE_ITERABLE.FUNC_ITERATOR, FUNC_ITERATOR);
 		
+		// add TnBox implementation
 		tniData.allocHandlers.put(this, (tni1)->new ArrayList<TnBoxObject>());
 		
 		tniData.functionHandlers.put(FUNC_GET, (thread, tni1, thiz, args)->{
@@ -86,6 +157,11 @@ public class SystemTypeList extends UserType {
 		tniData.functionHandlers.put(FUNC_SIZE, (thread, tni1, thiz, args)->{
 			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
 			return Arrays.asList(new TnBoxObject(tni.corePackage.TYPE_INT, a.size()));
+		});
+		
+		tniData.functionHandlers.put(FUNC_ITERATOR, (thread, tni1, thiz, args)->{
+			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
+			return Arrays.asList(new TnBoxObject(TYPE_ITERATOR, new Iterator.Value(a)));
 		});
 	}
 }
