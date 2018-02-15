@@ -4,6 +4,12 @@ import info.iconmaster.typhon.types.Type;
 import info.iconmaster.typhon.types.TypeRef;
 
 public class TnBoxObject {
+	public static TnBoxObject alloc(TypeRef type) {
+		TnBoxInstance inst = new TnBoxInstance();
+		
+		return new TnBoxObject(type, inst);
+	}
+	
 	public Object value;
 	public TypeRef type;
 	

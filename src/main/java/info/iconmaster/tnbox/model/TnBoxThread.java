@@ -31,7 +31,7 @@ public class TnBoxThread {
 	 */
 	public TnBoxThread(TnBoxEnvironment environ, Function f, Map<Variable, TnBoxObject> args) {
 		this.environ = environ;
-		callStack.push(new TnBoxCall(this, f, f.getCode(), args));
+		callStack.push(new TnBoxUserCall(this, f, f.getCode(), args));
 	}
 	
 	public void step() {
@@ -101,18 +101,9 @@ public class TnBoxThread {
 			callStack.pop();
 		}
 		
-		// move execution to catch label
-		int i = 0;
-		for (Instruction inst : handler.call.code.ops) {
-			if (inst.op == OpCode.LABEL && inst.args[0] == handler.info.label) {
-				handler.call.pc = i;
-				break;
-			}
-			i++;
+		if (handler.call instanceof TnBoxUserCall) {
+			handler.call.handleError(handler, error);
 		}
-		
-		// supply error as variable
-		handler.call.scope.getVar(handler.info.var).set(error.thrown);
 		
 		// remove all other handlers of this tryId
 		while (!errorHandlers.isEmpty()) {

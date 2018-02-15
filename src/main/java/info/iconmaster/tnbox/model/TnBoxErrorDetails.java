@@ -10,19 +10,17 @@ public class TnBoxErrorDetails {
 	public List<StackTraceItem> stackTrace = new ArrayList<>();
 	public TnBoxObject thrown;
 	
-	public static class StackTraceItem {
+	public abstract static class StackTraceItem {
 		public TnBoxCall call;
 		public SourceInfo source;
 		
-		public StackTraceItem(TnBoxCall call, SourceInfo source) {
+		public StackTraceItem(TnBoxUserCall call, SourceInfo source) {
 			this.call = call;
 			this.source = source;
 		}
 		
 		@Override
-		public String toString() {
-			return call.source.prettyPrint()+" ["+source+"]";
-		}
+		public abstract String toString();
 	}
 	
 	public TnBoxErrorDetails(TnBoxThread thread, TnBoxObject thrown) {
@@ -30,7 +28,8 @@ public class TnBoxErrorDetails {
 		this.thrown = thrown;
 		
 		for (TnBoxCall call : thread.callStack) {
-			stackTrace.add(0, new StackTraceItem(call, call.code.ops.get(call.pc-1).source));
+			StackTraceItem sti = call.asStackTraceItem();
+			if (sti != null) stackTrace.add(0, sti);
 		}
 	}
 }
