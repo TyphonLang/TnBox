@@ -24,6 +24,11 @@ public class TyphonInputData {
 	public SystemTypeList TYPE_LIST;
 	
 	/**
+	 * Internal type definitions.
+	 */
+	public SystemTypeMap TYPE_MAP;
+	
+	/**
 	 * The input this extension is mapped to.
 	 */
 	public TyphonInput tni;
@@ -43,6 +48,7 @@ public class TyphonInputData {
 		TyphonInputData.registry.put(tni, this);
 		
 		TYPE_LIST = new SystemTypeList(this);
+		TYPE_MAP = new SystemTypeMap(this);
 		
 		CoreFunctions.register(tni);
 		OperatorFunctions.register(tni);

@@ -13,4 +13,9 @@ public class TnBoxInstance {
 	public TnBoxInstance(Map<Field, TnBoxObject> fields) {
 		this.fields.putAll(fields);
 	}
+
+	@Override
+	public String toString() {
+		return "TnBoxInstance [fields=" + fields + "]";
+	}
 }
