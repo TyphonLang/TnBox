@@ -7,8 +7,6 @@ import java.util.Stack;
 
 import info.iconmaster.tnbox.model.TnBoxErrorDetails.StackTraceItem;
 import info.iconmaster.typhon.TyphonInput;
-import info.iconmaster.typhon.compiler.Instruction;
-import info.iconmaster.typhon.compiler.Instruction.OpCode;
 import info.iconmaster.typhon.compiler.Variable;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.types.Type;
@@ -67,7 +65,7 @@ public class TnBoxThread {
 		TnBoxErrorHandler handler = null;
 		while (!errorHandlers.isEmpty()) {
 			TnBoxErrorHandler potentialHandler = errorHandlers.pop();
-			if (error.thrown.type.canCastTo(potentialHandler.info.toCatch)) {
+			if (error.thrown.type.canCastTo(potentialHandler.toCatch)) {
 				handler = potentialHandler;
 				break;
 			}
@@ -101,15 +99,7 @@ public class TnBoxThread {
 			callStack.pop();
 		}
 		
-		if (handler.call instanceof TnBoxUserCall) {
-			handler.call.handleError(handler, error);
-		}
-		
-		// remove all other handlers of this tryId
-		while (!errorHandlers.isEmpty()) {
-			if (errorHandlers.peek().call != handler.call || errorHandlers.peek().tryId != handler.tryId) break;
-			errorHandlers.pop();
-		}
+		handler.handleError(error);
 	}
 	
 	public void throwError(Type type, String message, TnBoxObject cause) {

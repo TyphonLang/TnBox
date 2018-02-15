@@ -21,6 +21,4 @@ public abstract class TnBoxCall {
 	public TnBoxErrorDetails.StackTraceItem asStackTraceItem() {
 		return null;
 	}
-	
-	public void handleError(TnBoxErrorHandler handler, TnBoxErrorDetails error) {}
 }

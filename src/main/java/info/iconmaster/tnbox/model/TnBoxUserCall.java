@@ -32,6 +32,39 @@ public class TnBoxUserCall extends TnBoxCall {
 		}
 	}
 	
+	public class UserErrorHandler extends TnBoxErrorHandler {
+		public Label tryId;
+		public CatchInfo info;
+		
+		public UserErrorHandler(Label tryId, CatchInfo info) {
+			super(TnBoxUserCall.this, info.toCatch);
+			this.tryId = tryId;
+			this.info = info;
+		}
+		
+		@Override
+		public void handleError(TnBoxErrorDetails error) {
+			// move execution to catch label
+			int i = 0;
+			for (Instruction inst : code.ops) {
+				if (inst.op == OpCode.LABEL && inst.args[0] == info.label) {
+					pc = i;
+					break;
+				}
+				i++;
+			}
+			
+			// supply error as variable
+			scope.getVar(info.var).set(error.thrown);
+			
+			// remove all other handlers of this tryId
+			while (!thread.errorHandlers.isEmpty()) {
+				if (thread.errorHandlers.peek().call != call || ((UserErrorHandler)thread.errorHandlers.peek()).tryId != tryId) break;
+				thread.errorHandlers.pop();
+			}
+		}
+	}
+	
 	public CodeBlock code;
 	public TnBoxScope scope = new TnBoxScope();
 	public TyphonModelEntity source;
@@ -531,7 +564,7 @@ public class TnBoxUserCall extends TnBoxCall {
 			List<CatchInfo> catches = (List<CatchInfo>) inst.args[1];
 			
 			for (CatchInfo info : catches) {
-				thread.errorHandlers.push(new TnBoxErrorHandler(this, tryId, info));
+				thread.errorHandlers.push(new UserErrorHandler(tryId, info));
 			}
 			
 			break;
@@ -541,7 +574,7 @@ public class TnBoxUserCall extends TnBoxCall {
 			Label tryId = (Label) inst.args[0];
 			
 			while (!thread.errorHandlers.isEmpty()) {
-				if (thread.errorHandlers.peek().call != this || thread.errorHandlers.peek().tryId != tryId) break;
+				if (thread.errorHandlers.peek().call != this || ((UserErrorHandler)thread.errorHandlers.peek()).tryId != tryId) break;
 				thread.errorHandlers.pop();
 			}
 			break;
@@ -558,22 +591,5 @@ public class TnBoxUserCall extends TnBoxCall {
 	@Override
 	public StackTraceItem asStackTraceItem() {
 		return new UserStackTraceItem();
-	}
-	
-	@Override
-	public void handleError(TnBoxErrorHandler handler, TnBoxErrorDetails error) {
-		// move execution to catch label
-		
-		int i = 0;
-		for (Instruction inst : code.ops) {
-			if (inst.op == OpCode.LABEL && inst.args[0] == handler.info.label) {
-				pc = i;
-				break;
-			}
-			i++;
-		}
-		
-		// supply error as variable
-		scope.getVar(handler.info.var).set(error.thrown);
 	}
 }

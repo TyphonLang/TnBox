@@ -1,17 +1,15 @@
 package info.iconmaster.tnbox.model;
 
-import info.iconmaster.typhon.compiler.CatchInfo;
-import info.iconmaster.typhon.compiler.Label;
+import info.iconmaster.typhon.types.TypeRef;
 
-public class TnBoxErrorHandler {
-	public Label tryId;
+public abstract class TnBoxErrorHandler {
 	public TnBoxCall call;
-	public CatchInfo info;
+	public TypeRef toCatch;
 	
-	public TnBoxErrorHandler(TnBoxCall call, Label tryId, CatchInfo info) {
-		super();
-		this.tryId = tryId;
+	public TnBoxErrorHandler(TnBoxCall call, TypeRef toCatch) {
 		this.call = call;
-		this.info = info;
+		this.toCatch = toCatch;
 	}
+	
+	public abstract void handleError(TnBoxErrorDetails error);
 }
