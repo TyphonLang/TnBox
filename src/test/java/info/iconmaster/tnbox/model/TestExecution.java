@@ -107,7 +107,7 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("@main void f() {var a = {1:2, 3:4}; print(a[1]);}", "2"),
 			new CaseValid("@main void f() {var a = {1:2, 3:4}; a[5] = 6; print(a[5]);}", "6"),
 			new CaseValid("@main void f() {var a = {1:2, 3:4}; a[1] = 6; print(a[1]);}", "6"),
-			new CaseValid("@main void f() {var a = {1:2}; print(a.keys.next());}", "1"),
+			new CaseValid("@main void f() {var a = {1:2}; print(a.keys.iterator().next());}", "1"),
 			new CaseValid("@main void f() {var a = {1:2}; for var e : a {print(e.key); print(e.value);}}", "12"),
 			
 			new CaseValid("@main void f() {}", "")
