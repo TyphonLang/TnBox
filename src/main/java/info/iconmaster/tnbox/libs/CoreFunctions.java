@@ -3,6 +3,7 @@ package info.iconmaster.tnbox.libs;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+import info.iconmaster.tnbox.model.TyphonInputData;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.model.libs.CorePackage;
 import info.iconmaster.typhon.model.libs.CoreTypeNumber;

@@ -1,8 +1,12 @@
-package info.iconmaster.tnbox.libs;
+package info.iconmaster.tnbox.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import info.iconmaster.tnbox.libs.CoreFunctions;
+import info.iconmaster.tnbox.libs.OperatorFunctions;
+import info.iconmaster.tnbox.libs.SystemTypeList;
+import info.iconmaster.tnbox.libs.SystemTypeMap;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.types.Type;

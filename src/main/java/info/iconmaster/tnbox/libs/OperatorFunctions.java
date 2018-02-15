@@ -6,8 +6,10 @@ import java.math.MathContext;
 import java.util.Arrays;
 import java.util.List;
 
+import info.iconmaster.tnbox.model.TnBoxFunction;
 import info.iconmaster.tnbox.model.TnBoxObject;
 import info.iconmaster.tnbox.model.TnBoxThread;
+import info.iconmaster.tnbox.model.TyphonInputData;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.model.AnnotationDefinition;
 import info.iconmaster.typhon.model.Function;

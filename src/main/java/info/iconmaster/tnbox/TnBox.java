@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import info.iconmaster.tnbox.libs.TyphonInputData;
 import info.iconmaster.tnbox.model.TnBoxEnvironment;
 import info.iconmaster.tnbox.model.TnBoxInstance;
 import info.iconmaster.tnbox.model.TnBoxThread;
+import info.iconmaster.tnbox.model.TyphonInputData;
 import info.iconmaster.typhon.Typhon;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.model.Constructor;

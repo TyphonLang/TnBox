@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import info.iconmaster.tnbox.model.TnBoxInstance;
 import info.iconmaster.tnbox.model.TnBoxObject;
+import info.iconmaster.tnbox.model.TyphonInputData;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.model.Field;
 import info.iconmaster.typhon.model.Function;

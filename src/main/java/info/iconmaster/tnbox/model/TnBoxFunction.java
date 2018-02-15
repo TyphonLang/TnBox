@@ -1,9 +1,7 @@
-package info.iconmaster.tnbox.libs;
+package info.iconmaster.tnbox.model;
 
 import java.util.List;
 
-import info.iconmaster.tnbox.model.TnBoxObject;
-import info.iconmaster.tnbox.model.TnBoxThread;
 import info.iconmaster.typhon.TyphonInput;
 
 public interface TnBoxFunction {

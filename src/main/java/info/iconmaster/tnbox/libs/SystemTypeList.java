@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import info.iconmaster.tnbox.model.TnBoxObject;
+import info.iconmaster.tnbox.model.TyphonInputData;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.model.Parameter;

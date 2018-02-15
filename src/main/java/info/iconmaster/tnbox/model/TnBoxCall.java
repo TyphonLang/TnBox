@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import info.iconmaster.tnbox.libs.TnBoxFunction;
-import info.iconmaster.tnbox.libs.TyphonInputData;
 import info.iconmaster.typhon.compiler.CatchInfo;
 import info.iconmaster.typhon.compiler.CodeBlock;
 import info.iconmaster.typhon.compiler.Instruction;
