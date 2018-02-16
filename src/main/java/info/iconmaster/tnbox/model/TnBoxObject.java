@@ -1,13 +1,69 @@
 package info.iconmaster.tnbox.model;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
+import info.iconmaster.typhon.model.Field;
 import info.iconmaster.typhon.types.Type;
 import info.iconmaster.typhon.types.TypeRef;
 
 public class TnBoxObject {
-	public static TnBoxObject alloc(TypeRef type) {
-		TnBoxInstance inst = new TnBoxInstance();
+	public static class FieldSetterCall extends TnBoxCall {
+		TnBoxInstance inst;
+		TnBoxObject ob;
+		Iterator<Field> iter;
+		Field field;
 		
-		return new TnBoxObject(type, inst);
+		public FieldSetterCall(TnBoxThread thread, TnBoxInstance inst, TnBoxObject ob, Iterator<Field> iter, Field field) {
+			super(thread);
+			this.inst = inst;
+			this.ob = ob;
+			this.iter = iter;
+			this.field = field;
+		}
+		
+		@Override
+		public void step() {
+			if (thread.retVal.size() != 1) {
+				thread.throwError(field.tni.corePackage.TYPE_ERROR_INTERNAL, "Returns for field initilization was not a single value", null);
+				return;
+			}
+			
+			TnBoxObject value = thread.retVal.get(0);
+			inst.fields.put(field, value);
+			
+			thread.callStack.pop();
+			
+			while (iter.hasNext()) {
+				Field f = iter.next();
+				
+				if (f.getValue() != null) {
+					thread.callStack.push(new FieldSetterCall(thread, inst, ob, iter, f));
+					thread.callStack.push(new TnBoxUserCall(thread, f, f.getValue(), ob));
+					return;
+				}
+			}
+		}
+	}
+	
+	public static TnBoxObject alloc(TnBoxThread thread, TypeRef type) {
+		TnBoxInstance inst = new TnBoxInstance();
+		TnBoxObject ob = new TnBoxObject(type, inst);
+		
+		// for each field that can be initalized, create a new thread to run the init code for that field
+		// this is done via a chain of FieldSetterCalls interlaced with TnBoxUserCalls
+		Iterator<Field> iter = type.getType().getAllFields().iterator();
+		while (iter.hasNext()) {
+			Field f = iter.next();
+			
+			if (f.getValue() != null) {
+				thread.callStack.push(new FieldSetterCall(thread, inst, ob, iter, f));
+				thread.callStack.push(new TnBoxUserCall(thread, f, f.getValue(), ob));
+				break;
+			}
+		}
+		
+		return ob;
 	}
 	
 	public Object value;

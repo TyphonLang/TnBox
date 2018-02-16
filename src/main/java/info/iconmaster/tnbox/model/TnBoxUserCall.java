@@ -70,6 +70,7 @@ public class TnBoxUserCall extends TnBoxCall {
 	public TyphonModelEntity source;
 	
 	public int pc;
+	public List<Variable> waitingforRet;
 	
 	public TnBoxUserCall(TnBoxThread thread, TyphonModelEntity source, CodeBlock code) {
 		super(thread);
@@ -536,7 +537,7 @@ public class TnBoxUserCall extends TnBoxCall {
 			if (TyphonInputData.registry.get(src.tni).allocHandlers.containsKey(src.getType())) {
 				ob = new TnBoxObject(src, TyphonInputData.registry.get(src.tni).allocHandlers.get(src.getType()).apply(src.tni));
 			} else {
-				ob = TnBoxObject.alloc(src);
+				ob = TnBoxObject.alloc(thread, src);
 			}
 			
 			scope.setVar(dest, ob);

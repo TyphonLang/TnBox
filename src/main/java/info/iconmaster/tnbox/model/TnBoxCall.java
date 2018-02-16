@@ -10,7 +10,6 @@ public abstract class TnBoxCall {
 	public boolean completed;
 	
 	public List<TnBoxObject> retVal = new ArrayList<>();
-	public List<Variable> waitingforRet;
 	
 	public TnBoxCall(TnBoxThread thread) {
 		this.thread = thread;
