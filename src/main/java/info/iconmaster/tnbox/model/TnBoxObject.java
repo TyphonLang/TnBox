@@ -1,6 +1,5 @@
 package info.iconmaster.tnbox.model;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import info.iconmaster.typhon.model.Field;
