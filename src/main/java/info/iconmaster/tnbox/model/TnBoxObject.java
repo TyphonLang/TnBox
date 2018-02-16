@@ -3,6 +3,7 @@ package info.iconmaster.tnbox.model;
 import java.util.Iterator;
 
 import info.iconmaster.typhon.model.Field;
+import info.iconmaster.typhon.model.StaticInitBlock;
 import info.iconmaster.typhon.types.Type;
 import info.iconmaster.typhon.types.TypeRef;
 
@@ -45,11 +46,38 @@ public class TnBoxObject {
 		}
 	}
 	
+	public static class StaticInitBlockCall extends TnBoxCall {
+		TnBoxInstance inst;
+		TnBoxObject ob;
+		Iterator<StaticInitBlock> iter;
+		StaticInitBlock block;
+		
+		public StaticInitBlockCall(TnBoxThread thread, TnBoxInstance inst, TnBoxObject ob, Iterator<StaticInitBlock> iter, StaticInitBlock block) {
+			super(thread);
+			this.inst = inst;
+			this.ob = ob;
+			this.iter = iter;
+			this.block = block;
+		}
+		
+		@Override
+		public void step() {
+			thread.callStack.pop();
+			
+			if (iter.hasNext()) {
+				StaticInitBlock b = iter.next();
+				
+				thread.callStack.push(new StaticInitBlockCall(thread, inst, ob, iter, b));
+				thread.callStack.push(new TnBoxUserCall(thread, b, b.getCode(), ob));
+			}
+		}
+	}
+	
 	public static TnBoxObject alloc(TnBoxThread thread, TypeRef type) {
 		TnBoxInstance inst = new TnBoxInstance();
 		TnBoxObject ob = new TnBoxObject(type, inst);
 		
-		// for each field that can be initalized, create a new thread to run the init code for that field
+		// for each field that can be initalized, create a new thread to run the init code for that field, in an unspecified order
 		// this is done via a chain of FieldSetterCalls interlaced with TnBoxUserCalls
 		Iterator<Field> iter = type.getType().getAllFields().iterator();
 		while (iter.hasNext()) {
@@ -60,6 +88,16 @@ public class TnBoxObject {
 				thread.callStack.push(new TnBoxUserCall(thread, f, f.getValue(), ob));
 				break;
 			}
+		}
+		
+		// now run all the instance init blocks, in an unspecified order
+		// this is done via a chain of StaticInitBlockCalls interlaced with TnBoxUserCalls
+		Iterator<StaticInitBlock> iter2 = type.getType().getAllInstanceInitBlocks().iterator();
+		if (iter2.hasNext()) {
+			StaticInitBlock b = iter2.next();
+			
+			thread.callStack.push(new StaticInitBlockCall(thread, inst, ob, iter2, b));
+			thread.callStack.push(new TnBoxUserCall(thread, b, b.getCode(), ob));
 		}
 		
 		return ob;
