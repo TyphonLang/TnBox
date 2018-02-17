@@ -1,12 +1,12 @@
 package info.iconmaster.tnbox.libs;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import info.iconmaster.tnbox.model.TnBoxObject;
 import info.iconmaster.tnbox.model.TyphonInputData;
 import info.iconmaster.typhon.TyphonInput;
+import info.iconmaster.typhon.model.Annotation;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.model.Parameter;
 import info.iconmaster.typhon.model.TemplateArgument;
@@ -84,7 +84,7 @@ public class SystemTypeList extends UserType {
 	public TemplateType T;
 	public Iterator TYPE_ITERATOR;
 	
-	public Function FUNC_GET, FUNC_SET, FUNC_SIZE, FUNC_ITERATOR;
+	public Function FUNC_GET, FUNC_SET, FUNC_SIZE, FUNC_ITERATOR, FUNC_ADD, FUNC_REMOVE;
 	
 	public SystemTypeList(TyphonInputData tniData) {
 		super(tniData.tni, "%SystemList"); markAsLibrary();
@@ -137,6 +137,25 @@ public class SystemTypeList extends UserType {
 		}));
 		Function.setOverride(tni.corePackage.TYPE_ITERABLE.FUNC_ITERATOR, FUNC_ITERATOR);
 		
+		getTypePackage().addFunction(FUNC_ADD = new Function(tni, "add", new TemplateType[] {
+				
+		}, new Parameter[] {
+				new Parameter(tni, "v", T, false),
+				new Parameter(tni, "i", tni.corePackage.TYPE_INT, true),
+		}, new Type[] {
+				
+		}));
+		Function.setOverride(input.corePackage.TYPE_LIST.FUNC_ADD, FUNC_ADD);
+		
+		getTypePackage().addFunction(FUNC_REMOVE = new Function(tni, "remove", new TemplateType[] {
+				
+		}, new Parameter[] {
+				new Parameter(tni, "i", tni.corePackage.TYPE_INT, true),
+		}, new Type[] {
+				T
+		}));
+		Function.setOverride(input.corePackage.TYPE_LIST.FUNC_REMOVE, FUNC_REMOVE);
+		
 		// add TnBox implementation
 		tniData.allocHandlers.put(this, (tni1)->new ArrayList<TnBoxObject>());
 		
@@ -163,6 +182,20 @@ public class SystemTypeList extends UserType {
 		tniData.functionHandlers.put(FUNC_ITERATOR, (thread, tni1, thiz, args)->{
 			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
 			return Arrays.asList(new TnBoxObject(TYPE_ITERATOR, new Iterator.Value(a)));
+		});
+		
+		tniData.functionHandlers.put(FUNC_ADD, (thread, tni1, thiz, args)->{
+			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
+			TnBoxObject v = args.get(0);
+			int i = (args.size() < 2 || args.get(1) == null || args.get(1).value == null) ? a.size() : (Integer) args.get(1).value;
+			a.add(i, v);
+			return Arrays.asList();
+		});
+		
+		tniData.functionHandlers.put(FUNC_REMOVE, (thread, tni1, thiz, args)->{
+			ArrayList<TnBoxObject> a = (ArrayList<TnBoxObject>) thiz.value;
+			int i = (args.size() < 1 || args.get(0) == null || args.get(0).value == null) ? a.size()-1 : (Integer) args.get(0).value;
+			return Arrays.asList(a.remove(i));
 		});
 	}
 }
