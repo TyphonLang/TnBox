@@ -8,8 +8,10 @@ import info.iconmaster.tnbox.libs.OperatorFunctions;
 import info.iconmaster.tnbox.libs.SystemTypeList;
 import info.iconmaster.tnbox.libs.SystemTypeMap;
 import info.iconmaster.typhon.TyphonInput;
+import info.iconmaster.typhon.model.Field;
 import info.iconmaster.typhon.model.Function;
 import info.iconmaster.typhon.types.Type;
+import info.iconmaster.typhon.types.TypeRef;
 
 /**
  * This class represents extension data to a given TyphonInput- Information TnBox needs on a per-TyphonInput basis.
@@ -38,6 +40,11 @@ public class TyphonInputData {
 	public TyphonInput tni;
 	
 	/**
+	 * This field is a dummy field used to store TnBoxErrorDetails for Error objects.
+	 */
+	public Field FIELD_ERROR_DETAILS;
+	
+	/**
 	 * Handlers for executing system functions.
 	 */
 	public Map<Function, TnBoxFunction> functionHandlers = new HashMap<>();
@@ -50,6 +57,8 @@ public class TyphonInputData {
 	public TyphonInputData(TyphonInput tni) {
 		this.tni = tni;
 		TyphonInputData.registry.put(tni, this);
+		
+		FIELD_ERROR_DETAILS = new Field("%errorDetails", TypeRef.var(tni));
 		
 		TYPE_LIST = new SystemTypeList(this);
 		TYPE_MAP = new SystemTypeMap(this);

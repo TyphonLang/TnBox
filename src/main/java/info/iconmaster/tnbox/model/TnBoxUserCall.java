@@ -554,7 +554,15 @@ public class TnBoxUserCall extends TnBoxCall {
 				break opSwitch;
 			}
 			
-			TnBoxErrorDetails error = new TnBoxErrorDetails(thread, ob);
+			TnBoxInstance errorInst = (TnBoxInstance) ob.value;
+			TnBoxObject errorOb = errorInst.fields.get(TyphonInputData.registry.get(thread.environ.tni).FIELD_ERROR_DETAILS);
+			TnBoxErrorDetails error = errorOb == null ? null : (TnBoxErrorDetails) errorOb.value;
+			if (error == null) {
+				error = new TnBoxErrorDetails(thread, ob);
+				errorInst.fields.put(TyphonInputData.registry.get(thread.environ.tni).FIELD_ERROR_DETAILS, new TnBoxObject(TypeRef.var(thread.environ.tni), error));
+			} else {
+				// TODO: append stack trace
+			}
 			
 			thread.throwError(error);
 			break;

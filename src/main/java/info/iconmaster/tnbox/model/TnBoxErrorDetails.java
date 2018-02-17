@@ -46,10 +46,39 @@ public class TnBoxErrorDetails {
 			sb.append(instance.fields.get(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE));
 		}
 		
+		sb.append('\n');
+		
 		for (StackTraceItem item : stackTrace) {
 			sb.append("\tat ");
 			sb.append(item.prettyPrint());
 			sb.append('\n');
+		}
+		
+		if (instance.fields.containsKey(tni.corePackage.TYPE_ERROR.FIELD_CAUSE) && instance.fields.get(tni.corePackage.TYPE_ERROR.FIELD_CAUSE) != null) {
+			TnBoxObject cause = instance.fields.get(tni.corePackage.TYPE_ERROR.FIELD_CAUSE);
+			while (cause != null) {
+				TnBoxInstance errorInst = (TnBoxInstance) cause.value;
+				TnBoxObject errorOb = errorInst.fields.get(TyphonInputData.registry.get(thread.environ.tni).FIELD_ERROR_DETAILS);
+				TnBoxErrorDetails error = errorOb == null ? null : (TnBoxErrorDetails) errorOb.value;
+				
+				sb.append("caused by ");
+				
+				if (error == null) {
+					sb.append(cause.type.prettyPrint());
+					
+					if (instance.fields.containsKey(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE)) {
+						sb.append(": ");
+						sb.append(instance.fields.get(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE));
+					}
+					
+					sb.append('\n');
+					
+					cause = errorInst.fields.get(TyphonInputData.registry.get(thread.environ.tni).FIELD_ERROR_DETAILS);
+				} else {
+					sb.append(error.prettyPrint());
+					break;
+				}
+			}
 		}
 		
 		return sb.toString();
