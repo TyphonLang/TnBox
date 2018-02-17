@@ -76,22 +76,8 @@ public class TnBoxThread {
 		if (handler == null) {
 			// no handler found, print exception to stderr and exit
 			this.error = error;
-			TyphonInput tni = error.thrown.type.tni;
-			TnBoxInstance instance = (TnBoxInstance) error.thrown.value;
-			
-			StringBuilder sb = new StringBuilder("runtime error: ");
-			sb.append(error.thrown.type.prettyPrint());
-			
-			if (instance.fields.containsKey(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE)) {
-				sb.append(": ");
-				sb.append(instance.fields.get(tni.corePackage.TYPE_ERROR.FIELD_MESSAGE));
-			}
-			
-			environ.err.println(sb.toString());
-			for (StackTraceItem item : error.stackTrace) {
-				environ.err.print("\tat ");
-				environ.err.println(item);
-			}
+			environ.err.print("runtime error: ");
+			environ.err.print(error.prettyPrint());
 			return;
 		}
 		

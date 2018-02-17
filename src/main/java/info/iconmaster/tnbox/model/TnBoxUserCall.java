@@ -27,7 +27,7 @@ public class TnBoxUserCall extends TnBoxCall {
 		}
 		
 		@Override
-		public String toString() {
+		public String prettyPrint() {
 			return TnBoxUserCall.this.source.prettyPrint()+" ["+source+"]";
 		}
 	}
