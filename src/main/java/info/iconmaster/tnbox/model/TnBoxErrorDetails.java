@@ -3,7 +3,6 @@ package info.iconmaster.tnbox.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.iconmaster.tnbox.model.TnBoxErrorDetails.StackTraceItem;
 import info.iconmaster.typhon.TyphonInput;
 import info.iconmaster.typhon.util.SourceInfo;
 

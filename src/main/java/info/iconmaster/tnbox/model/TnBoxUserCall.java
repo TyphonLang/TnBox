@@ -554,6 +554,11 @@ public class TnBoxUserCall extends TnBoxCall {
 				break opSwitch;
 			}
 			
+			if (!ob.type.canCastTo(new TypeRef(thread.environ.tni.corePackage.TYPE_ERROR))) {
+				thread.throwError(inst.tni.corePackage.TYPE_ERROR_CAST, "attempt to throw object of type "+ob.type.prettyPrint()+"; expected type Error", null);
+				break opSwitch;
+			}
+			
 			TnBoxInstance errorInst = (TnBoxInstance) ob.value;
 			TnBoxObject errorOb = errorInst.fields.get(TyphonInputData.registry.get(thread.environ.tni).FIELD_ERROR_DETAILS);
 			TnBoxErrorDetails error = errorOb == null ? null : (TnBoxErrorDetails) errorOb.value;
@@ -561,7 +566,10 @@ public class TnBoxUserCall extends TnBoxCall {
 				error = new TnBoxErrorDetails(thread, ob);
 				errorInst.fields.put(TyphonInputData.registry.get(thread.environ.tni).FIELD_ERROR_DETAILS, new TnBoxObject(TypeRef.var(thread.environ.tni), error));
 			} else {
-				// TODO: append stack trace
+				TnBoxErrorDetails tempError = new TnBoxErrorDetails(thread, ob);
+				error.stackTrace.clear();
+				error.stackTrace.add(new UserStackTraceItem());
+				error.stackTrace.addAll(tempError.stackTrace);
 			}
 			
 			thread.throwError(error);
