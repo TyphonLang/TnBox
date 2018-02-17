@@ -18,7 +18,7 @@ def typhonJar
 if (hasProperty('fromMaven')) {
 	typhonJar = "info.iconmaster:typhon:${typhonVersion}"
 } else {
-	typhonJar = files("lib/typhon-${typhonVersion}.jar")
+	typhonJar = files("../Typhon/build/libs/typhon-${typhonVersion}.jar")
 }
 
 // define sources
