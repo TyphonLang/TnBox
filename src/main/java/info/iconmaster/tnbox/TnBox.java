@@ -96,7 +96,7 @@ public class TnBox {
 			}
 			
 			// setup environ
-			TnBoxEnvironment environ = new TnBoxEnvironment();
+			TnBoxEnvironment environ = new TnBoxEnvironment(tni);
 			
 			// execute main
 			new TnBoxThread(environ, main, new HashMap<>()).run();
@@ -118,7 +118,7 @@ public class TnBox {
 		
 		if (f.isStatic()) {
 			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getGetter(), (thread, tni, thiz, args)->{
-				return Arrays.asList(thread.environ.globalFields.get(f));
+				return Arrays.asList(thread.environ.globals.get(f));
 			});
 		} else {
 			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getGetter(), (thread, tni, thiz, args)->{
@@ -134,7 +134,7 @@ public class TnBox {
 		
 		if (f.isStatic()) {
 			TyphonInputData.registry.get(f.tni).functionHandlers.put(f.getSetter(), (thread, tni, thiz, args)->{
-				thread.environ.globalFields.put(f, args.get(0));
+				thread.environ.globals.put(f, args.get(0));
 				return Arrays.asList();
 			});
 		} else {

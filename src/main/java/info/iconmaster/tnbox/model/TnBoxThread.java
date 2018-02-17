@@ -20,6 +20,7 @@ public class TnBoxThread {
 	
 	public TnBoxThread(TnBoxEnvironment environ) {
 		this.environ = environ;
+		environ.initialize(this);
 	}
 	
 	/**
@@ -30,6 +31,7 @@ public class TnBoxThread {
 	public TnBoxThread(TnBoxEnvironment environ, Function f, Map<Variable, TnBoxObject> args) {
 		this.environ = environ;
 		callStack.push(new TnBoxUserCall(this, f, f.getCode(), args));
+		environ.initialize(this);
 	}
 	
 	public void step() {

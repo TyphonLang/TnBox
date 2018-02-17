@@ -46,13 +46,13 @@ public class TnBoxObject {
 		}
 	}
 	
-	public static class StaticInitBlockCall extends TnBoxCall {
+	public static class InstanceInitBlockCall extends TnBoxCall {
 		TnBoxInstance inst;
 		TnBoxObject ob;
 		Iterator<StaticInitBlock> iter;
 		StaticInitBlock block;
 		
-		public StaticInitBlockCall(TnBoxThread thread, TnBoxInstance inst, TnBoxObject ob, Iterator<StaticInitBlock> iter, StaticInitBlock block) {
+		public InstanceInitBlockCall(TnBoxThread thread, TnBoxInstance inst, TnBoxObject ob, Iterator<StaticInitBlock> iter, StaticInitBlock block) {
 			super(thread);
 			this.inst = inst;
 			this.ob = ob;
@@ -67,7 +67,7 @@ public class TnBoxObject {
 			if (iter.hasNext()) {
 				StaticInitBlock b = iter.next();
 				
-				thread.callStack.push(new StaticInitBlockCall(thread, inst, ob, iter, b));
+				thread.callStack.push(new InstanceInitBlockCall(thread, inst, ob, iter, b));
 				thread.callStack.push(new TnBoxUserCall(thread, b, b.getCode(), ob));
 			}
 		}
@@ -96,7 +96,7 @@ public class TnBoxObject {
 		if (iter2.hasNext()) {
 			StaticInitBlock b = iter2.next();
 			
-			thread.callStack.push(new StaticInitBlockCall(thread, inst, ob, iter2, b));
+			thread.callStack.push(new InstanceInitBlockCall(thread, inst, ob, iter2, b));
 			thread.callStack.push(new TnBoxUserCall(thread, b, b.getCode(), ob));
 		}
 		

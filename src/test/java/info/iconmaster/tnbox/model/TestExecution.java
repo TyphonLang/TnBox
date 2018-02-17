@@ -113,6 +113,10 @@ public class TestExecution extends TyphonTest {
 			new CaseValid("class B {int y = 2;} class A : B {int x = 1;} @main void f() {var a = new A(); print(a.x); print(a.y);}", "12"),
 			new CaseValid("class A {{print(1);}} @main void f() {var a = new A(); print(2);}", "12"),
 			new CaseValid("class B {int x = 1; {x = x + 1;}} class A : B {{x = x + 1;}} @main void f() {var a = new A(); print(a.x);}", "3"),
+			new CaseValid("int x = 3; @main void f() {print(x);}", "3"),
+			new CaseValid("package p {int x = 3;} @main void f() {print(p.x);}", "3"),
+			new CaseValid("int x = 2; {x = 3;} @main void f() {print(x);}", "3"),
+			new CaseValid("int x = 2; {x = x + 1;} @main void f() {print(x);}", "3"),
 			
 			new CaseValid("@main void f() {}", "")
 		);
@@ -146,7 +150,7 @@ public class TestExecution extends TyphonTest {
 			
 			Function f = p.getFunctions().stream().filter(ff->ff.hasAnnot(tni.corePackage.ANNOT_MAIN)).findFirst().get();
 			
-			TnBoxEnvironment environ = new TnBoxEnvironment();
+			TnBoxEnvironment environ = new TnBoxEnvironment(tni);
 			environ.out = new PrintStream(new OutputStream() {
 				@Override
 				public void write(int b) throws IOException {
