@@ -32,16 +32,17 @@ public class TnBox {
 	 */
 	public static void main(String[] args) {
 		List<String> a = new ArrayList<>(Arrays.asList(args));
-		a.add(0, "-r");
+		a.add(0, "tnbox-run");
 		Typhon.main(a.toArray(args));
 	}
 	
-	public static final CommandLineHelper.Option OPTION_RUN = new CommandLineHelper.Option(new String[] {"tnbox-run"}, new String[] {"r"}, false, "Runs the generated code in TnBox if specified.");
 	public static final CommandLineHelper.Option OPTION_MAIN = new CommandLineHelper.Option(new String[] {"tnbox-main"}, new String[] {}, false, "Specifies the main function.");
+	
+	public static final CommandLineHelper.Command COMMAND_RUN = new CommandLineHelper.Command("tnbox-run", new String[] {"run"}, "Runs the generated code in TnBox.");
 	
 	@TyphonPlugin.AddCommandLineOptions
 	public static Object addOpts() {
-		return new CommandLineHelper.Option[] {OPTION_RUN, OPTION_MAIN};
+		return new Object[] {OPTION_MAIN, COMMAND_RUN};
 	}
 	
 	private static List<Function> getMains(Package p) {
@@ -67,7 +68,7 @@ public class TnBox {
 	
 	@TyphonPlugin.OnCompilationComplete
 	public static void onDone(CommandLineHelper claHelper, CommandLineHelper.Result result, TyphonInput tni) {
-		if (result.optionalArguments.containsKey(OPTION_RUN)) {
+		if (result.commands.contains(COMMAND_RUN)) {
 			// find the main method
 			Function main = null;
 			
