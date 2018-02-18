@@ -36,12 +36,14 @@ public class TnBox {
 		Typhon.main(a.toArray(args));
 	}
 	
-	public static final CommandLineHelper.Option OPTION_MAIN = new CommandLineHelper.Option(new String[] {"tnbox-main"}, new String[] {}, false, "Specifies the main function.");
-	
-	public static final CommandLineHelper.Command COMMAND_RUN = new CommandLineHelper.Command("tnbox-run", new String[] {"run"}, "Runs the generated code in TnBox.");
+	public static CommandLineHelper.Option OPTION_MAIN;
+	public static CommandLineHelper.Command COMMAND_RUN;
 	
 	@TyphonPlugin.AddCommandLineOptions
 	public static Object addOpts() {
+		OPTION_MAIN = new CommandLineHelper.Option(new String[] {"tnbox-main"}, new String[] {}, false, "Specifies the main function.");
+		COMMAND_RUN = new CommandLineHelper.Command("tnbox-run", new String[] {"run"}, "Runs the generated code in TnBox.", onRunTnBox);
+		
 		return new Object[] {OPTION_MAIN, COMMAND_RUN};
 	}
 	
@@ -64,44 +66,6 @@ public class TnBox {
 	@TyphonPlugin.OnNewTyphonInput
 	public static void initRegistry(TyphonInput tni) {
 		new TyphonInputData(tni);
-	}
-	
-	@TyphonPlugin.OnCompilationComplete
-	public static void onDone(CommandLineHelper claHelper, CommandLineHelper.Result result, TyphonInput tni) {
-		if (result.commands.contains(COMMAND_RUN)) {
-			// find the main method
-			Function main = null;
-			
-			if (result.optionalArguments.containsKey(OPTION_MAIN)) {
-				// TODO: it was explicitly specified
-			} else {
-				// find methods annotated with @main
-				List<Function> mains = new ArrayList<>();
-				
-				for (Package p : tni.inputPackages) {
-					mains.addAll(getMains(p));
-				}
-				
-				// error if none or more than 1 main
-				if (mains.isEmpty()) {
-					System.err.println("error: no main function found. Please annotate a function with @main or specify a main function with --tnbox-main.");
-					return;
-				}
-				
-				if (mains.size() > 1) {
-					System.err.println("error: multiple main functions found. Please specify a main function with --tnbox-main.");
-					return;
-				}
-				
-				main = mains.get(0);
-			}
-			
-			// setup environ
-			TnBoxEnvironment environ = new TnBoxEnvironment(tni);
-			
-			// execute main
-			new TnBoxThread(environ, main, new HashMap<>()).run();
-		}
 	}
 	
 	@TyphonPlugin.OnInitDefaultConstructor
@@ -146,4 +110,39 @@ public class TnBox {
 			});
 		}
 	}
+	
+	public static final CommandLineHelper.Command.OnRun onRunTnBox = (tni, claHelper, result) -> {
+		// find the main method
+		Function main = null;
+		
+		if (result.optionalArguments.containsKey(OPTION_MAIN)) {
+			// TODO: it was explicitly specified
+		} else {
+			// find methods annotated with @main
+			List<Function> mains = new ArrayList<>();
+			
+			for (Package p : tni.inputPackages) {
+				mains.addAll(getMains(p));
+			}
+			
+			// error if none or more than 1 main
+			if (mains.isEmpty()) {
+				System.err.println("error: no main function found. Please annotate a function with @main or specify a main function with --tnbox-main.");
+				return;
+			}
+			
+			if (mains.size() > 1) {
+				System.err.println("error: multiple main functions found. Please specify a main function with --tnbox-main.");
+				return;
+			}
+			
+			main = mains.get(0);
+		}
+		
+		// setup environ
+		TnBoxEnvironment environ = new TnBoxEnvironment(tni);
+		
+		// execute main
+		new TnBoxThread(environ, main, new HashMap<>()).run();
+	};
 }
