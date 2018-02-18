@@ -23,7 +23,7 @@ import info.iconmaster.typhon.types.TypeRef;
 public class TnBoxUserCall extends TnBoxCall {
 	public class UserStackTraceItem extends TnBoxErrorDetails.StackTraceItem {
 		public UserStackTraceItem() {
-			super(TnBoxUserCall.this, code.ops.get(pc).source);
+			super(TnBoxUserCall.this, code.ops.get(pc-1).source);
 		}
 		
 		@Override
