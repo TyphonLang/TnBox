@@ -112,6 +112,8 @@ public class TnBox {
 	}
 	
 	public static final CommandLineHelper.Command.OnRun onRunTnBox = (tni, claHelper, result) -> {
+		if (!tni.errors.isEmpty()) return;
+		
 		// find the main method
 		Function main = null;
 		
