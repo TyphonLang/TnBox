@@ -8,10 +8,10 @@ TnBox is a [Typhon](https://github.com/TyphonLang/Typhon) plugin that provides a
 
 ## Running
 
-To run TnBox, first download the JAR from [Bintray](https://bintray.com/iconmaster5326/maven/tnbox/_latestVersion), our Maven repository and download provider. Then invoke it like so:
+To run TnBox, first download the JAR from [Bintray](https://bintray.com/iconmaster5326/maven/tnbox/_latestVersion), our Maven repository and download provider. Note that there are three JARs to download per version; to get the one you can run from the command line, look for the one with `-complete` at the end of the file name. Then invoke it like so:
 
 ```
-java -jar tnbox.jar <your file>.tn
+java -jar tnbox-complete.jar <your file>.tn
 ```
 
 This will execute the Typhon file given in as an argument. Run it without arguments to see a list of all the options you can specify.
