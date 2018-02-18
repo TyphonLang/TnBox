@@ -7,12 +7,12 @@ apply plugin: 'antlr'
 // variables
 
 group = 'info.iconmaster'
-version = '0.1.6'
+version = '0.2.0'
 
 def mainClass = 'info.iconmaster.tnbox.TnBox'
 def processedSrcDir = "${buildDir}/generated-src/java/main"
 
-def typhonVersion = '0.3.11'
+def typhonVersion = '0.4.0'
 
 def typhonJar
 if (hasProperty('fromMaven')) {
